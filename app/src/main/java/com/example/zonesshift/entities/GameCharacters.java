@@ -9,15 +9,26 @@ import com.example.zonesshift.main.MainActivity;
 
 public enum GameCharacters implements BitmapMethods {
 
-    PLAYER(R.drawable.ciz25new);
+    PLAYER(R.drawable.ciz25_sheet);
 
-    private final Bitmap[][] sprites = new Bitmap[7][4];
+    private Bitmap spriteSheet;
+    private Bitmap[][] sprites = new Bitmap[5][2];
 
-    GameCharacters(int resId) {
+//    GameCharacters(int resId) {
+//        options.inScaled = false;
+//        Bitmap spriteSheet = BitmapFactory.decodeResource(MainActivity.getGameContext().getResources(), resId, options);
+//
+//        sprites[0][0] = getScaleBitmap(Bitmap.createBitmap(spriteSheet, 0, 0, 64, 64));
+//    }
+
+    GameCharacters(int resID) {
         options.inScaled = false;
-        Bitmap spriteSheet = BitmapFactory.decodeResource(MainActivity.getGameContext().getResources(), resId, options);
-
-        sprites[0][0] = getScaleBitmap(Bitmap.createBitmap(spriteSheet, 0, 0, 64, 64));
+        spriteSheet = BitmapFactory.decodeResource(MainActivity.getGameContext().getResources(), resID, options);
+        for(int j = 0; j < sprites.length; j++){
+            for(int i = 0; i < sprites[j].length; i++){
+                sprites[j][i] = getScaleBitmap(Bitmap.createBitmap(spriteSheet, 64 * i ,64 * j, 64, 64));
+            }
+        }
     }
 
     public Bitmap getSprite(int yPos, int xPos){

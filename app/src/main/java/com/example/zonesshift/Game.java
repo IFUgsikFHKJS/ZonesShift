@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
+import com.example.zonesshift.environments.Tile;
 import com.example.zonesshift.gamestates.Playing;
 import com.example.zonesshift.main.GameLoop;
 
@@ -20,6 +21,7 @@ public class Game {
         this.holder = holder;
         gameLoop = new GameLoop(this);
         playing = new Playing(this);
+        Tile.playing = playing;
     }
 
     public boolean touchEvent(MotionEvent event) {

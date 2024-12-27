@@ -6,8 +6,10 @@ import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_HEIGHT_
 import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_WIDTH;
 import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_WIDTH_RES;
 
+
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.view.MotionEvent;
 
 import com.example.zonesshift.entities.Character;
@@ -20,27 +22,37 @@ import com.example.zonesshift.main.MainActivity;
 
 public class Playing extends BaseState implements GameStateInterface {
 
-    private boolean movePlayer;
-    private boolean isJumping = true;
     private final Player player;
 
     //For movement
+    private boolean movePlayer;
     private float xTouch;
     private float xDiff;
     private float x;
     private float xSpeed;
+
+    //For jumping
+    private boolean isJumping = true;
+    private float yTouch;
+    private float yDiff;
+    private float y;
+    private float ySpeed;
+
+    //For zones
+    public static boolean inRedZone;
+
     private Tile[][] tiles;
     public Playing(Game game){
         super(game);
         player = new Player();
         tiles =  MapLoader.loadMap(MainActivity.getGameContext(), "maps/map1.txt", 9, 19);
-        Tile.player = player;
     }
 
     @Override
     public void update(double delta) {
         updatePlayerMove(delta);
-
+        updatePlayerJump(delta);
+//        player.update(delta, movePlayer);
     }
 
     @Override
@@ -51,10 +63,19 @@ public class Playing extends BaseState implements GameStateInterface {
 
     private void drawPlayer(Canvas c) {
 
-        c.drawBitmap(player.getGameCharType().getSprite(0,0),
-                player.getHitbox().left + x,
-                player.getHitbox().top,
+        c.drawBitmap(player.getGameCharType().getSprite(player.getAniIndex(),
+                        player.getFaceDir()),
+                player.getHitbox().left + x - 40,
+                player.getHitbox().top + y - 22,
                 null);
+
+        Paint hitboxPaint =  new Paint();
+        hitboxPaint.setColor(Color.RED);
+        hitboxPaint.setStyle(Paint.Style.STROKE);
+        c.drawRect(player.getHitbox().left + x, player.getHitbox().top + y,
+                player.getHitbox().right + x, player.getHitbox().bottom + y,hitboxPaint);
+//        System.out.println(player.getHitbox().left + x + " " + player.getHitbox().top + y + " " + player.getHitbox().right + x + " " +  player.getHitbox().bottom + y);
+//        System.out.println(player.getHitbox().left + " " +  player.getHitbox().right + " " + player.getHitbox().top + " " + player.getHitbox().bottom);
     }
 
     private void drawMap(Canvas c) {
@@ -71,27 +92,33 @@ public class Playing extends BaseState implements GameStateInterface {
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
                 xTouch = event.getX();
+                yTouch = event.getY();
                 movePlayer = true;
                 break;
             case MotionEvent.ACTION_MOVE:
                 float xNew = event.getX();
+                float yNew = event.getY();
                 xDiff = xTouch - xNew;
+                yDiff = yTouch - yNew;
+
                 movePlayer = true;
                 break;
             case MotionEvent.ACTION_UP:
+                xTouch = 0; yTouch = 0; xDiff = 0; yDiff = 0;
                 movePlayer = false;
+                player.resetAnimation();
         }
     }
 
     private void updatePlayerMove(double delta){
+        Playing.inRedZone = false;
         if(!movePlayer) {
             xSpeed -= xSpeed / 50;
+            // Blocking moving and setting speed to 0 if player hits solid block
             for (Tile[] row : tiles) {
                 for (Tile tile : row) {
-                    if (tile != null) {if(tile.checkCollision(player.getHitbox().left + x + xSpeed * -1, player.getHitbox().top, (float) GAME_WIDTH / GAME_WIDTH_RES * 2, (float) GAME_HEIGHT / GAME_HEIGHT_RES * 2)){
-                        xSpeed = 0;
+                    if (checkCollisions(tile))
                         return;
-                    }};
                 }
             }
             x += xSpeed * -1;
@@ -99,7 +126,31 @@ public class Playing extends BaseState implements GameStateInterface {
                 xSpeed = 0;
             return;
         }
+        if(inRedZone)
+            System.out.println(true);
+        if (!isJumping && !inRedZone)
+            xSpeed = calculateSpeed(delta);
+        else if(inRedZone) return;
 
+        for (Tile[] row : tiles) {
+            for (Tile tile : row) {
+                if (checkCollisions(tile))
+                    return;
+            }
+        }
+
+        x += xSpeed * -1;
+    }
+
+    private boolean checkCollisions(Tile tile){
+        if (tile != null) {return (tile.checkCollision(player.getHitbox().left + x + xSpeed * -1,
+                player.getHitbox().top + y,
+                player.getHitbox().right + x + xSpeed * -1,
+                player.getHitbox().bottom + y));}
+        return false;
+    }
+
+    private float calculateSpeed(double delta){
         float baseSpeed = (float) delta * 300;
         float speedMultiplayer = Math.abs(xDiff);
 
@@ -112,36 +163,63 @@ public class Playing extends BaseState implements GameStateInterface {
             speedMultiplayer *= -1;
 
 
-
         speedMultiplayer /= 100;
 
-        if(Math.abs(xSpeed) < speedMultiplayer * baseSpeed){
+        if(Math.abs(xSpeed) < speedMultiplayer * baseSpeed || speedMultiplayer == 0){
             float boost = 0.1f;
-                xSpeed +=  (xDiff > 0 ? boost : -boost);
-                if(xDiff == 0){
-                    if(xSpeed > 0){
-//                        xDiff -= boost;
-                    } else {
-                        xDiff += boost;
-                    }
-                }
+            xSpeed +=  (xDiff > 0 ? boost : -boost);
+//                        xDiff += boost;
         } else {
             xSpeed = speedMultiplayer * baseSpeed;
         }
 
-        for (Tile[] row : tiles) {
-            for (Tile tile : row) {
-                if (tile != null) {if(tile.checkCollision(player.getHitbox().left + x + xSpeed * -1, player.getHitbox().top, (float) GAME_WIDTH / GAME_WIDTH_RES * 2, (float) GAME_HEIGHT / GAME_HEIGHT_RES * 2)){
-                    return;
-                }};
-            }
+        if (xSpeed > 0)
+            player.setFaceDir(0);
+        else if (xSpeed < 0)
+            player.setFaceDir(1);
+
+        return xSpeed;
+    }
+
+    private void updatePlayerJump(double delta){
+        float baseSpeed = (float) delta * 300;
+
+        if(isJumping){
+            ySpeed += 0.5f;
+        }
+
+
+        if (yDiff >= 100 && !isJumping) {
+            ySpeed = -12;
+            isJumping = true;
         }
 
 
 
-        x += xSpeed * -1;
-//        System.out.println(xSpeed + " " + xDiff);
+        for (Tile[] row : tiles) {
+            for (Tile tile : row) {
 
+                if (tile != null) {if(tile.checkCollision(player.getHitbox().left + x,
+                        player.getHitbox().top + y + ySpeed,
+                        player.getHitbox().right + x,
+                        player.getHitbox().bottom + y + ySpeed)){
+
+                    if(ySpeed >= 0)
+                        isJumping = false;
+                    ySpeed = 0;
+                    return;
+
+                }} else if (ySpeed == 0) {
+                    ySpeed += 0.5f;
+                    isJumping = true;
+                }
+
+            }
+        }
+
+        y += ySpeed;
+
+//        System.out.println(yDiff + " " + ySpeed + " " + y + " " + isJumping);
     }
 
     public void drawCharacter(Canvas canvas, Character c){
@@ -151,7 +229,4 @@ public class Playing extends BaseState implements GameStateInterface {
                 null );
     }
 
-    public Player getPlayer() {
-        return player;
-    }
 }
