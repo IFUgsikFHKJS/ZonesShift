@@ -11,6 +11,8 @@ public class Tile {
     private int x, y, size;
     private char type;
     public static Playing playing;
+    private float tileOffsetX;
+    private float tileOffsetY;
 
     public Tile(int x, int y, int size, char type) {
         this.x = x;
@@ -19,7 +21,7 @@ public class Tile {
         this.type = type;
     }
 
-    public void draw(Canvas canvas) {
+    public void draw(Canvas canvas, float tileOffsetX, float tileOffsetY) {
         Paint paint = new Paint();
         switch (type) {
             case '1': paint.setColor(Color.GRAY); break;
@@ -28,17 +30,16 @@ public class Tile {
             case 'B': paint.setColor(Color.BLUE); break;
             default: paint.setColor(Color.WHITE); break;
         }
-        canvas.drawRect(x, y, x + size, y + size, paint);
+        canvas.drawRect(x + tileOffsetX, y + tileOffsetY, x + size + tileOffsetX, y + size + tileOffsetY, paint);
+        this.tileOffsetX = tileOffsetX;
+        this.tileOffsetY = tileOffsetY;
     }
 
     public boolean checkCollision(float playerX,float playerY,float playerWidth,float playerHeight) {
-//        System.out.println(playerX + " " + playerWidth + " " + playerY + " " + playerHeight);
-        if(playerX < x + size && playerWidth > x &&
-                playerY < y + size && playerHeight > y){
-//            System.out.println(type);
+        if(playerX < x + tileOffsetX + size && playerWidth > x + tileOffsetX &&
+                playerY < y + size + tileOffsetY && playerHeight > y + tileOffsetY){
             switch (type){
                 case 'R':
-//                    System.out.println(type);
                     Playing.inRedZone = true;
                     break;
                 case '1':

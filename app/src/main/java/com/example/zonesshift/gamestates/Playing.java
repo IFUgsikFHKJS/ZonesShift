@@ -5,6 +5,7 @@ import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_HEIGHT;
 import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_HEIGHT_RES;
 import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_WIDTH;
 import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_WIDTH_RES;
+import static com.example.zonesshift.helpers.GameConstants.TILE_WIDTH;
 
 
 import android.graphics.Canvas;
@@ -41,7 +42,9 @@ public class Playing extends BaseState implements GameStateInterface {
     //For zones
     public static boolean inRedZone;
 
-    private Tile[][] tiles;
+    private final Tile[][] tiles;
+    private final float tileOffsetX = (GAME_WIDTH - (float) (TILE_WIDTH * 19)) / 2;
+    private final float tileOffsetY = (GAME_HEIGHT - (float) (TILE_WIDTH * 9)) / 2;
     public Playing(Game game){
         super(game);
         player = new Player();
@@ -62,11 +65,12 @@ public class Playing extends BaseState implements GameStateInterface {
     }
 
     private void drawPlayer(Canvas c) {
-
+        float playerWidth = (float) ((float) ((GAME_WIDTH / GAME_WIDTH_RES) * 2) - (GAME_WIDTH*0.7 / GAME_WIDTH_RES)) / 2;
+        float playerHeight = (float) (((double) GAME_HEIGHT / GAME_HEIGHT_RES * 2) - (GAME_HEIGHT * 1.5 / GAME_HEIGHT_RES)) / 2;
         c.drawBitmap(player.getGameCharType().getSprite(player.getAniIndex(),
                         player.getFaceDir()),
-                player.getHitbox().left + x - 40,
-                player.getHitbox().top + y - 22,
+                player.getHitbox().left + x - playerWidth,
+                player.getHitbox().top + y - playerHeight,
                 null);
 
         Paint hitboxPaint =  new Paint();
@@ -82,7 +86,7 @@ public class Playing extends BaseState implements GameStateInterface {
         c.drawColor(Color.BLACK); // Clear screen
         for (Tile[] row : tiles) {
             for (Tile tile : row) {
-                if (tile != null) tile.draw(c);
+                if (tile != null) tile.draw(c, tileOffsetX, tileOffsetY);
             }
         }
     }

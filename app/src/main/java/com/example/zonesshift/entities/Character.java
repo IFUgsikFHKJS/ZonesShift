@@ -8,8 +8,8 @@ public abstract class Character extends Entity{
     protected int faceDir = 1;
     protected final GameCharacters gameCharType;
 
-    public Character(PointF pos, GameCharacters gameCharType) {
-        super(pos, pos.x + 78, pos.y + 128);
+    public Character(PointF pos, float width, float height, GameCharacters gameCharType) {
+        super(pos, width, height);
         this.gameCharType = gameCharType;
     }
 

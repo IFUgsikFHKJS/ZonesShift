@@ -1,8 +1,6 @@
 package com.example.zonesshift.environments;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
 
 import com.example.zonesshift.helpers.GameConstants;
 
