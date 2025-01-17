@@ -2,10 +2,7 @@ package com.example.zonesshift.gamestates;
 
 
 import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_HEIGHT;
-import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_HEIGHT_RES;
 import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_WIDTH;
-import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_WIDTH_RES;
-import static com.example.zonesshift.helpers.GameConstants.TILE_WIDTH;
 
 
 import android.graphics.Canvas;
@@ -13,11 +10,14 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.MotionEvent;
 
+import androidx.annotation.NonNull;
+
 import com.example.zonesshift.entities.Character;
 import com.example.zonesshift.Game;
 import com.example.zonesshift.entities.Player;
 import com.example.zonesshift.environments.MapLoader;
 import com.example.zonesshift.environments.Tile;
+import com.example.zonesshift.helpers.GameConstants;
 import com.example.zonesshift.helpers.interfaces.GameStateInterface;
 import com.example.zonesshift.main.MainActivity;
 
@@ -43,18 +43,34 @@ public class Playing extends BaseState implements GameStateInterface {
     public static boolean inRedZone;
 
     private final Tile[][] tiles;
-    private final float tileOffsetX = (GAME_WIDTH - (float) (TILE_WIDTH * 19)) / 2;
-    private final float tileOffsetY = (GAME_HEIGHT - (float) (TILE_WIDTH * 9)) / 2;
+    private static int tileSize = GAME_HEIGHT / 9;
+    private final float tileOffsetX = (GAME_WIDTH - (float) (tileSize * 19)) / 2;
+    private final float tileOffsetY = (GAME_HEIGHT - (float) (tileSize * 9)) / 2;
     public Playing(Game game){
         super(game);
         player = new Player();
         tiles =  MapLoader.loadMap(MainActivity.getGameContext(), "maps/map1.txt", 9, 19);
+        if (GAME_WIDTH < tileSize * 19)
+            tileSize = GAME_WIDTH / 19;
+        for (Tile[] row : tiles) {
+            for (Tile tile : row) {
+                if (tile != null) tile.setSize(tileSize);
+            }
+        }
+    }
+
+    public static int getTileSize() {
+        return tileSize;
     }
 
     @Override
     public void update(double delta) {
         updatePlayerMove(delta);
         updatePlayerJump(delta);
+//        System.out.println(GAME_WIDTH / GAME_WIDTH_RES);
+//        System.out.println(GAME_WIDTH);
+//        System.out.println(GAME_WIDTH_RES);
+//        System.out.println(GAME_HEIGHT_RES);
 //        player.update(delta, movePlayer);
     }
 
@@ -65,8 +81,8 @@ public class Playing extends BaseState implements GameStateInterface {
     }
 
     private void drawPlayer(Canvas c) {
-        float playerWidth = (float) ((float) ((GAME_WIDTH / GAME_WIDTH_RES) * 2) - (GAME_WIDTH*0.7 / GAME_WIDTH_RES)) / 2;
-        float playerHeight = (float) (((double) GAME_HEIGHT / GAME_HEIGHT_RES * 2) - (GAME_HEIGHT * 1.5 / GAME_HEIGHT_RES)) / 2;
+        float playerWidth = (float) ((float) ((tileSize) * 2) - (tileSize * 0.7)) / 2;
+        float playerHeight = (float) (((double) tileSize * 2) - (tileSize * 1.5)) / 2;
         c.drawBitmap(player.getGameCharType().getSprite(player.getAniIndex(),
                         player.getFaceDir()),
                 player.getHitbox().left + x - playerWidth,
@@ -115,7 +131,6 @@ public class Playing extends BaseState implements GameStateInterface {
     }
 
     private void updatePlayerMove(double delta){
-        Playing.inRedZone = false;
         if(!movePlayer) {
             xSpeed -= xSpeed / 50;
             // Blocking moving and setting speed to 0 if player hits solid block
@@ -130,8 +145,18 @@ public class Playing extends BaseState implements GameStateInterface {
                 xSpeed = 0;
             return;
         }
-        if(inRedZone)
-            System.out.println(true);
+        loop:
+        for (Tile[] row : tiles) {
+            for (Tile tile : row) {
+                checkCollisions(tile);
+                if (Tile.isInRedZone())
+                    break loop;
+            }
+        }
+        inRedZone = Tile.isInRedZone();
+
+        System.out.println(inRedZone);
+
         if (!isJumping && !inRedZone)
             xSpeed = calculateSpeed(delta);
         else if(inRedZone) return;
@@ -169,7 +194,7 @@ public class Playing extends BaseState implements GameStateInterface {
 
         speedMultiplayer /= 100;
 
-        if(Math.abs(xSpeed) < speedMultiplayer * baseSpeed || speedMultiplayer == 0){
+        if(Math.abs(xSpeed) < Math.abs(speedMultiplayer * baseSpeed) || speedMultiplayer == 0){
             float boost = 0.1f;
             xSpeed +=  (xDiff > 0 ? boost : -boost);
 //                        xDiff += boost;
@@ -226,7 +251,8 @@ public class Playing extends BaseState implements GameStateInterface {
 //        System.out.println(yDiff + " " + ySpeed + " " + y + " " + isJumping);
     }
 
-    public void drawCharacter(Canvas canvas, Character c){
+
+    public void drawCharacter(@NonNull Canvas canvas, Character c){
         canvas.drawBitmap(c.getGameCharType().getSprite(1,1),
                 c.getHitbox().left,
                 c.getHitbox().top,

@@ -2,6 +2,7 @@ package com.example.zonesshift.environments;
 
 import android.content.Context;
 
+import com.example.zonesshift.gamestates.Playing;
 import com.example.zonesshift.helpers.GameConstants;
 
 import java.io.BufferedReader;
@@ -20,7 +21,7 @@ public class MapLoader {
                 for (int col = 0; col < line.length(); col++) {
                     char c = line.charAt(col);
                     if (c != '.') {
-                        tiles[row][col] = new Tile(col * GameConstants.TILE_WIDTH, row * GameConstants.TILE_HEIGHT, GameConstants.TILE_WIDTH, c);
+                        tiles[row][col] = new Tile(col * Playing.getTileSize(), row * Playing.getTileSize(), Playing.getTileSize(), c);
                     }
                 }
                 row++;
