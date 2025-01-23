@@ -18,4 +18,8 @@ public interface BitmapMethods {
     default Bitmap getScaleBitmap(Bitmap bitmap){
         return Bitmap.createScaledBitmap(bitmap, Playing.getTileSize() * 2, Playing.getTileSize() * 2, false);
     }
+
+    default Bitmap getScaleBitmapBlock(Bitmap bitmap){
+        return Bitmap.createScaledBitmap(bitmap, Playing.getTileSize(), Playing.getTileSize(), false);
+    }
 }

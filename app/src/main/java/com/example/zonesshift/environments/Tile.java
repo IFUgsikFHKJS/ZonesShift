@@ -1,6 +1,7 @@
 package com.example.zonesshift.environments;
 
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -9,7 +10,7 @@ import com.example.zonesshift.gamestates.Playing;
 
 public class Tile {
     private final int x, y;
-    private int size;
+    private int size = 32;
     private final char type;
     public static Playing playing;
     private float tileOffsetX;
@@ -23,21 +24,32 @@ public class Tile {
         this.type = type;
     }
     public void setSize(int size){
-        System.out.println(this.size);
+//        System.out.println(this.size);
         this.size = size;
-        System.out.println(this.size);
+//        System.out.println(this.size);
     }
 
-    public void draw(Canvas canvas, float tileOffsetX, float tileOffsetY) {
+    public void draw(Canvas canvas, float tileOffsetX, float tileOffsetY, int tileTexture) {
         Paint paint = new Paint();
+        Bitmap bitmap = null;
         switch (type) {
-            case '1': paint.setColor(Color.GRAY); break;
-            case 'R': paint.setColor(Color.RED); break;
+            case '1': paint.setColor(Color.GRAY);
+                bitmap = Blocks.SOLID.getSprite(tileTexture);
+                break;
+            case 'R': paint.setColor(Color.RED);
+                bitmap = Blocks.REDZONE.getSprite(tileTexture);
+                break;
             case 'Y': paint.setColor(Color.YELLOW); break;
             case 'B': paint.setColor(Color.BLUE); break;
             default: paint.setColor(Color.WHITE); break;
         }
-        canvas.drawRect(x + tileOffsetX, y + tileOffsetY, x + size + tileOffsetX, y + size + tileOffsetY, paint);
+        
+        if(type != '1' && type != 'R') {
+            canvas.drawRect(x + tileOffsetX, y + tileOffsetY, x + size + tileOffsetX, y + size + tileOffsetY, paint);
+        }
+        else {
+            canvas.drawBitmap(bitmap, x + tileOffsetX, y + tileOffsetY, null);
+        }
         this.tileOffsetX = tileOffsetX;
         this.tileOffsetY = tileOffsetY;
 //        System.out.println(size);
@@ -60,5 +72,9 @@ public class Tile {
 
     public static boolean isInRedZone() {
         return inRedZone;
+    }
+
+    public char getType() {
+        return type;
     }
 }

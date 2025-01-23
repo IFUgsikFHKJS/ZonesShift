@@ -76,8 +76,9 @@ public class Playing extends BaseState implements GameStateInterface {
 
     @Override
     public void render(Canvas c){
-        drawMap(c);
+        c.drawColor(Color.BLACK); // Clear screen
         drawPlayer(c);
+        drawMap(c);
     }
 
     private void drawPlayer(Canvas c) {
@@ -89,22 +90,59 @@ public class Playing extends BaseState implements GameStateInterface {
                 player.getHitbox().top + y - playerHeight,
                 null);
 
-        Paint hitboxPaint =  new Paint();
-        hitboxPaint.setColor(Color.RED);
-        hitboxPaint.setStyle(Paint.Style.STROKE);
-        c.drawRect(player.getHitbox().left + x, player.getHitbox().top + y,
-                player.getHitbox().right + x, player.getHitbox().bottom + y,hitboxPaint);
+//        Paint hitboxPaint =  new Paint();
+//        hitboxPaint.setColor(Color.RED);
+//        hitboxPaint.setStyle(Paint.Style.STROKE);
+//        c.drawRect(player.getHitbox().left + x, player.getHitbox().top + y,
+//                player.getHitbox().right + x, player.getHitbox().bottom + y,hitboxPaint);
 //        System.out.println(player.getHitbox().left + x + " " + player.getHitbox().top + y + " " + player.getHitbox().right + x + " " +  player.getHitbox().bottom + y);
 //        System.out.println(player.getHitbox().left + " " +  player.getHitbox().right + " " + player.getHitbox().top + " " + player.getHitbox().bottom);
     }
 
     private void drawMap(Canvas c) {
-        c.drawColor(Color.BLACK); // Clear screen
-        for (Tile[] row : tiles) {
-            for (Tile tile : row) {
-                if (tile != null) tile.draw(c, tileOffsetX, tileOffsetY);
+        for (int y = 0; y < tiles.length; y++) {
+            for (int x = 0; x < tiles[y].length; x++) {
+                if (tiles[y][x] != null) {
+                    int tileTexture = determineTexture(tiles, y, x, tiles[y][x].getType());
+                    tiles[y][x].draw(c, tileOffsetX, tileOffsetY, tileTexture);
+                }
             }
         }
+    }
+
+    private int determineTexture(Tile[][] map, int y, int x, char type){
+        boolean up = y > 0 && map[y - 1][x] != null && map[y - 1][x].getType() == type;
+        boolean down = y < map.length - 1 && map[y + 1][x] != null && map[y + 1][x].getType() == type;
+        boolean left = x > 0 && map[y][x - 1] != null && map[y][x - 1].getType() == type;
+        boolean right = x < map[0].length - 1 && map[y][x + 1] != null && map[y][x + 1].getType() == type;
+
+        //Border on one side
+        if (up && down && left && right) return 5;
+        if (!up && down && left && right) return 1;
+        if (up && !down && left && right) return 9;
+        if (up && down && !left && right) return 4;
+        if (up && down && left && !right) return 6;
+
+        //Borders on adjacent sides
+        if (!up && down && !left && right) return 0;
+        if (!up && down && left && !right) return 2;
+        if (up && !down && !left && right) return 8;
+        if (up && !down && left && !right) return 10;
+
+        //Borders on all sides
+        if (!up && !down && !left && !right) return 14;
+
+        //Borders on three sides
+        if (!up && !down && !left && right) return 11;
+        if (!up && !down && left && !right) return 15;
+        if (!up && down && !left && !right) return 3;
+        if (up && !down && !left && !right) return 7;
+
+        if (up && down && !left && !right) return 12;
+        if (!up && !down && left && right) return 13;
+
+
+        return 14; // Default case
     }
 
     @Override
@@ -131,7 +169,16 @@ public class Playing extends BaseState implements GameStateInterface {
     }
 
     private void updatePlayerMove(double delta){
-        if(!movePlayer) {
+        loop:
+        for (Tile[] row : tiles) {
+            for (Tile tile : row) {
+                checkCollisions(tile);
+                if (Tile.isInRedZone())
+                    break loop;
+            }
+        }
+        inRedZone = Tile.isInRedZone();
+        if(!movePlayer || inRedZone) {
             xSpeed -= xSpeed / 50;
             // Blocking moving and setting speed to 0 if player hits solid block
             for (Tile[] row : tiles) {
@@ -145,21 +192,12 @@ public class Playing extends BaseState implements GameStateInterface {
                 xSpeed = 0;
             return;
         }
-        loop:
-        for (Tile[] row : tiles) {
-            for (Tile tile : row) {
-                checkCollisions(tile);
-                if (Tile.isInRedZone())
-                    break loop;
-            }
-        }
-        inRedZone = Tile.isInRedZone();
+
 
         System.out.println(inRedZone);
 
         if (!isJumping && !inRedZone)
             xSpeed = calculateSpeed(delta);
-        else if(inRedZone) return;
 
         for (Tile[] row : tiles) {
             for (Tile tile : row) {
