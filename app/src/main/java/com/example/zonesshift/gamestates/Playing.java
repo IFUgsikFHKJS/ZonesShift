@@ -8,6 +8,7 @@ import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_WIDTH;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
@@ -48,7 +49,7 @@ public class Playing extends BaseState implements GameStateInterface {
     private final float tileOffsetY = (GAME_HEIGHT - (float) (tileSize * 9)) / 2;
     public Playing(Game game){
         super(game);
-        player = new Player();
+        player = new Player(new PointF(tileSize * 2 + tileOffsetX, GAME_HEIGHT - tileSize * 3 - tileOffsetY));
         tiles =  MapLoader.loadMap(MainActivity.getGameContext(), "maps/map1.txt", 9, 19);
         if (GAME_WIDTH < tileSize * 19)
             tileSize = GAME_WIDTH / 19;
@@ -256,8 +257,8 @@ public class Playing extends BaseState implements GameStateInterface {
         }
 
 
-        if (yDiff >= 100 && !isJumping) {
-            ySpeed = -12;
+        if (yDiff >= 100 && !isJumping && !inRedZone) {
+            ySpeed = (float) -12.5;
             isJumping = true;
         }
 

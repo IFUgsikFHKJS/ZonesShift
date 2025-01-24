@@ -61,7 +61,9 @@ public class Tile {
                 playerY < y + size + tileOffsetY && playerHeight > y + tileOffsetY){
             switch (type){
                 case 'R':
-                    inRedZone = true;
+                    if(playerX < (x + tileOffsetX + size) * 1.1 && playerWidth > (x + tileOffsetX) * 0.9 &&
+                            playerY < (y + size + tileOffsetY * 1.1) && playerHeight > (y + tileOffsetY) * 0.9)
+                        inRedZone = true;
                     break;
                 case '1':
                     return true;
