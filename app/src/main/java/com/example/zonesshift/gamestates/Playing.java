@@ -32,6 +32,8 @@ public class Playing extends BaseState implements GameStateInterface {
     private float xDiff;
     private float x;
     private float xSpeed;
+    private float maxSpeed;
+    private float minSpeed;
 
     //For jumping
     private boolean isJumping = true;
@@ -39,6 +41,9 @@ public class Playing extends BaseState implements GameStateInterface {
     private float yDiff;
     private float y;
     private float ySpeed;
+    private float maxJumpSpeed = 0.15625f;
+//    private float jumpHeight = 3f;
+//    private float gravity = 7.8125f;
 
     //For zones
     public static boolean inRedZone;
@@ -53,6 +58,9 @@ public class Playing extends BaseState implements GameStateInterface {
         tiles =  MapLoader.loadMap(MainActivity.getGameContext(), "maps/map1.txt", 9, 19);
         if (GAME_WIDTH < tileSize * 19)
             tileSize = GAME_WIDTH / 19;
+        maxSpeed = (float) tileSize / 12;
+        minSpeed = maxSpeed / 4;
+        maxJumpSpeed *= tileSize;
         for (Tile[] row : tiles) {
             for (Tile tile : row) {
                 if (tile != null) tile.setSize(tileSize);
@@ -173,14 +181,18 @@ public class Playing extends BaseState implements GameStateInterface {
         loop:
         for (Tile[] row : tiles) {
             for (Tile tile : row) {
-                checkCollisions(tile);
+                if (tile != null) { tile.checkCollision(player.getHitbox().left + x ,
+                        player.getHitbox().top + y,
+                        player.getHitbox().right + x,
+                        player.getHitbox().bottom + y);}
                 if (Tile.isInRedZone())
                     break loop;
             }
         }
         inRedZone = Tile.isInRedZone();
         if(!movePlayer || inRedZone) {
-            xSpeed -= xSpeed / 50;
+            if (xSpeed != 0)
+                xSpeed -= xSpeed > 0 ? maxSpeed / 50 : -maxSpeed / 50;
             // Blocking moving and setting speed to 0 if player hits solid block
             for (Tile[] row : tiles) {
                 for (Tile tile : row) {
@@ -195,15 +207,19 @@ public class Playing extends BaseState implements GameStateInterface {
         }
 
 
-        System.out.println(inRedZone);
+//        System.out.println(inRedZone);
 
         if (!isJumping && !inRedZone)
             xSpeed = calculateSpeed(delta);
 
         for (Tile[] row : tiles) {
             for (Tile tile : row) {
-                if (checkCollisions(tile))
+                if (checkCollisions(tile)) {
+                  xSpeed = xDiff > 0 ? minSpeed : -minSpeed;
+                  if (xDiff == 0)
+                      xSpeed = 0;
                     return;
+                }
             }
         }
 
@@ -219,22 +235,28 @@ public class Playing extends BaseState implements GameStateInterface {
     }
 
     private float calculateSpeed(double delta){
+        System.out.println(tileSize);
         float baseSpeed = (float) delta * 300;
-        float speedMultiplayer = Math.abs(xDiff);
+        float speedMultiplayer = Math.abs(xDiff) / 200 * maxSpeed;
 
-        if(speedMultiplayer < 100 && speedMultiplayer >= 80)
-            speedMultiplayer = 50;
-        else if (speedMultiplayer > 200)
-            speedMultiplayer = 200;
+        if(speedMultiplayer < minSpeed)
+            speedMultiplayer = 0;
+        else if (speedMultiplayer >= maxSpeed)
+            speedMultiplayer = maxSpeed;
+
+
+
+
+        System.out.println(speedMultiplayer);
 
         if(xDiff < 0)
             speedMultiplayer *= -1;
 
 
-        speedMultiplayer /= 100;
+//        speedMultiplayer /= 100;
 
         if(Math.abs(xSpeed) < Math.abs(speedMultiplayer * baseSpeed) || speedMultiplayer == 0){
-            float boost = 0.1f;
+            float boost = maxSpeed / 50;
             xSpeed +=  (xDiff > 0 ? boost : -boost);
 //                        xDiff += boost;
         } else {
@@ -253,12 +275,12 @@ public class Playing extends BaseState implements GameStateInterface {
         float baseSpeed = (float) delta * 300;
 
         if(isJumping){
-            ySpeed += 0.5f;
+            ySpeed += maxJumpSpeed / 25;
         }
 
 
         if (yDiff >= 100 && !isJumping && !inRedZone) {
-            ySpeed = (float) -12.5;
+            ySpeed = -maxJumpSpeed;
             isJumping = true;
         }
 
@@ -278,7 +300,7 @@ public class Playing extends BaseState implements GameStateInterface {
                     return;
 
                 }} else if (ySpeed == 0) {
-                    ySpeed += 0.5f;
+                    ySpeed += maxJumpSpeed / 25;
                     isJumping = true;
                 }
 
