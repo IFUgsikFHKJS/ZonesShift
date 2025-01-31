@@ -35,6 +35,7 @@ public class Game {
 
     public void render(){
         Canvas c = holder.lockCanvas();
+
         c.drawColor(Color.BLACK);
 
         playing.render(c);

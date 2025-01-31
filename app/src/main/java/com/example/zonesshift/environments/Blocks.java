@@ -11,7 +11,8 @@ import com.example.zonesshift.main.MainActivity;
 public enum Blocks implements BitmapMethods {
 
     SOLID(R.drawable.block_solid, 4, 4),
-    REDZONE(R.drawable.block_redzone, 4, 4);
+    REDZONE(R.drawable.block_redzone, 4, 4),
+    WIN(R.drawable.win,1,1);
 
     private Bitmap[] sprites;
 
@@ -22,7 +23,7 @@ public enum Blocks implements BitmapMethods {
         for(int j = 0; j < tilesInHeight; j++){
             for(int i = 0; i < tilesInWidth; i++){
                 int index = j * tilesInWidth + i;
-                int tileSize = 32;
+                int tileSize = resID == R.drawable.win ? 16 : 32;
                 sprites[index] = getScaleBitmapBlock(Bitmap.createBitmap(spriteSheet, tileSize * i, tileSize * j, tileSize, tileSize));
             }
 

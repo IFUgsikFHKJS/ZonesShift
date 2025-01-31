@@ -15,8 +15,8 @@ public interface BitmapMethods {
 
     BitmapFactory.Options options = new BitmapFactory.Options();
 
-    default Bitmap getScaleBitmap(Bitmap bitmap){
-        return Bitmap.createScaledBitmap(bitmap, Playing.getTileSize() * 2, Playing.getTileSize() * 2, false);
+    default Bitmap getScaleBitmap(Bitmap bitmap, int tileSize){
+        return Bitmap.createScaledBitmap(bitmap, tileSize * 2, tileSize * 2, false);
     }
 
     default Bitmap getScaleBitmapBlock(Bitmap bitmap){

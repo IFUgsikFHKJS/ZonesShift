@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import com.example.zonesshift.R;
+import com.example.zonesshift.gamestates.Playing;
 import com.example.zonesshift.helpers.interfaces.BitmapMethods;
 import com.example.zonesshift.main.MainActivity;
 
@@ -26,7 +27,17 @@ public enum GameCharacters implements BitmapMethods {
         spriteSheet = BitmapFactory.decodeResource(MainActivity.getGameContext().getResources(), resID, options);
         for(int j = 0; j < sprites.length; j++){
             for(int i = 0; i < sprites[j].length; i++){
-                sprites[j][i] = getScaleBitmap(Bitmap.createBitmap(spriteSheet, 64 * i ,64 * j, 64, 64));
+                sprites[j][i] = getScaleBitmap(Bitmap.createBitmap(spriteSheet, 64 * i ,64 * j, 64, 64), Playing.getTileSize());
+            }
+        }
+    }
+
+    public void setPlayerBitmap(int tileSize){
+        options.inScaled = false;
+        spriteSheet = BitmapFactory.decodeResource(MainActivity.getGameContext().getResources(), R.drawable.ciz25_sheet, options);
+        for(int j = 0; j < sprites.length; j++){
+            for(int i = 0; i < sprites[j].length; i++){
+                sprites[j][i] = getScaleBitmap(Bitmap.createBitmap(spriteSheet, 64 * i ,64 * j, 64, 64), tileSize);
             }
         }
     }

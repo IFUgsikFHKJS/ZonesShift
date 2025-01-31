@@ -1,9 +1,9 @@
-package com.example.zonesshift.environments;
+package com.example.zonesshift.environments.mapmanagment;
 
 import android.content.Context;
 
+import com.example.zonesshift.environments.Tile;
 import com.example.zonesshift.gamestates.Playing;
-import com.example.zonesshift.helpers.GameConstants;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -17,11 +17,14 @@ public class MapLoader {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             String line;
             int row = 0;
+            System.out.println(111111111);
+
             while ((line = reader.readLine()) != null) {
+
                 for (int col = 0; col < line.length(); col++) {
                     char c = line.charAt(col);
                     if (c != '.') {
-                        tiles[row][col] = new Tile(col * Playing.getTileSize(), row * Playing.getTileSize(), Playing.getTileSize(), c);
+                        tiles[row][col] = new Tile(col, row, 32, c);
                     }
                 }
                 row++;

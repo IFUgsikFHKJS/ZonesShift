@@ -7,14 +7,16 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 import com.example.zonesshift.gamestates.Playing;
+import com.example.zonesshift.environments.mapmanagment.MapManager;
+
 
 public class Tile {
-    private final int x, y;
+    private int x, y;
     private int size = 32;
     private final char type;
     public static Playing playing;
-    private float tileOffsetX;
-    private float tileOffsetY;
+    private int tileOffsetX;
+    private int tileOffsetY;
     private static boolean inRedZone;
 
     public Tile(int x, int y, int size, char type) {
@@ -26,10 +28,12 @@ public class Tile {
     public void setSize(int size){
 //        System.out.println(this.size);
         this.size = size;
+        x *= size;
+        y *= size;
 //        System.out.println(this.size);
     }
 
-    public void draw(Canvas canvas, float tileOffsetX, float tileOffsetY, int tileTexture) {
+    public void draw(Canvas canvas, int tileOffsetX, int tileOffsetY, int tileTexture) {
         Paint paint = new Paint();
         Bitmap bitmap = null;
         switch (type) {
@@ -41,10 +45,13 @@ public class Tile {
                 break;
             case 'Y': paint.setColor(Color.YELLOW); break;
             case 'B': paint.setColor(Color.BLUE); break;
+            case 'W': paint.setColor(Color.GREEN);
+                bitmap = Blocks.WIN.getSprite(0);
+                break;
             default: paint.setColor(Color.WHITE); break;
         }
         
-        if(type != '1' && type != 'R') {
+        if(type != '1' && type != 'R' && type != 'W') {
             canvas.drawRect(x + tileOffsetX, y + tileOffsetY, x + size + tileOffsetX, y + size + tileOffsetY, paint);
         }
         else {
@@ -63,6 +70,8 @@ public class Tile {
                 case 'R':
                     inRedZone = true;
                     break;
+                case 'W':
+                    MapManager.nextMap();
                 case '1':
                     return true;
             }
