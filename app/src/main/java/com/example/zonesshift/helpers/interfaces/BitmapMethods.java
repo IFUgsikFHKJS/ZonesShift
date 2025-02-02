@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import com.example.zonesshift.gamestates.Playing;
-import com.example.zonesshift.helpers.GameConstants;
 
 
 public interface BitmapMethods {

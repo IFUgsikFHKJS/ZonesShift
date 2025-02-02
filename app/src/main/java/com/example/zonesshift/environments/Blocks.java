@@ -15,12 +15,8 @@ public enum Blocks implements BitmapMethods {
     WIN(R.drawable.win,1,1);
 
     private Bitmap[] sprites;
-    private int resID, tilesInWidth, tilesInHeight;
 
     Blocks(int resID, int tilesInWidth, int tilesInHeight){
-        this.resID = resID;
-        this.tilesInHeight = tilesInHeight;
-        this.tilesInWidth = tilesInWidth;
         options.inScaled = false;
         sprites = new Bitmap[tilesInHeight * tilesInWidth];
         Bitmap spriteSheet = BitmapFactory.decodeResource(MainActivity.getGameContext().getResources(), resID, options);
@@ -29,21 +25,6 @@ public enum Blocks implements BitmapMethods {
                 int index = j * tilesInWidth + i;
                 int tileSize = resID == R.drawable.win ? 16 : 32;
                 sprites[index] = getScaleBitmapBlock(Bitmap.createBitmap(spriteSheet, tileSize * i, tileSize * j, tileSize, tileSize));
-            }
-
-        }
-    }
-
-    public void updateBitmap(){
-        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        options.inScaled = false;
-        sprites = new Bitmap[tilesInHeight * tilesInWidth];
-        Bitmap spriteSheet = BitmapFactory.decodeResource(MainActivity.getGameContext().getResources(), resID, options);
-        for(int j = 0; j < tilesInHeight; j++){
-            for(int i = 0; i < tilesInWidth; i++){
-                int index = j * tilesInWidth + i;
-                int tileSize = resID == R.drawable.win ? 16 : 32;
-                sprites[index] = Bitmap.createScaledBitmap(Bitmap.createBitmap(spriteSheet, tileSize * i, tileSize * j, tileSize, tileSize), Playing.getTileSize(), Playing.getTileSize(), false);
             }
 
         }

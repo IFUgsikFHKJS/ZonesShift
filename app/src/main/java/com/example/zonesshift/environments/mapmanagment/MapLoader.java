@@ -17,7 +17,6 @@ public class MapLoader {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             String line;
             int row = 0;
-            System.out.println(111111111);
 
             while ((line = reader.readLine()) != null) {
 

@@ -21,7 +21,7 @@ public class Playing extends BaseState implements GameStateInterface {
     public Playing(Game game){
         super(game);
         mapManager = new MapManager();
-        mapManager.setCurrentMap(0);
+        mapManager.setCurrentMap(2);
         btnRestart = new CustomButton(20, 20, ButtonImages.LVL_RESTART.getWidth(), ButtonImages.LVL_RESTART.getHeight());
     }
 

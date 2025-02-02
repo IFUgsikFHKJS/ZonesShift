@@ -17,7 +17,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class MapManager {
-    private String[] mapNames = {"map1.txt", "map2.txt"};
+    private String[] mapNames = {"map1.txt", "map2.txt", "map3.txt"};
     private static int currentMapId;
     private static ArrayList<Map> maps = new ArrayList<Map>();
     private static Map currentMap;
@@ -44,6 +44,8 @@ public class MapManager {
             maps.add(new Map(tiles));
         }
     }
+
+
 
 
 
@@ -75,9 +77,7 @@ public class MapManager {
         float[] cords = currentMap.getPlayerCords();
         player = new Player(new PointF( cords[0], cords[1]));
         GameCharacters.PLAYER.setPlayerBitmap(currentMap.getTileSize());
-        Blocks.REDZONE.updateBitmap();
-        Blocks.SOLID.updateBitmap();
-        Blocks.WIN.updateBitmap();
+        currentMap.updateBitmap();
 //        Playing.setPlayerCords(maps.get(currentMap).getPlayerCords(maps.get(currentMap).getTiles()));
     }
 

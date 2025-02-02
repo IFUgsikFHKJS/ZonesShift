@@ -6,10 +6,12 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+
 import com.example.zonesshift.gamestates.Playing;
+import com.example.zonesshift.helpers.interfaces.BitmapMethods;
 
 
-public class Tile {
+public class Tile implements BitmapMethods {
     private int x, y;
     private int size = 32;
     private final char type;
@@ -31,41 +33,38 @@ public class Tile {
         this.size = size;
         x *= size;
         y *= size;
-        setBitmap();
 //        System.out.println(this.size);
     }
 
-    private void setBitmap(){
+    public void updateBitmap(){
         switch (type) {
             case '1':
-                bitmap = Blocks.SOLID.getSprite(textureID);
+                bitmap = getScaleBitmapBlock(Blocks.SOLID.getSprite(textureID));
                 break;
             case 'R':
-                bitmap = Blocks.REDZONE.getSprite(textureID);
+                bitmap = getScaleBitmapBlock(Blocks.REDZONE.getSprite(textureID));
                 break;
             case 'W':
-                bitmap = Blocks.WIN.getSprite(0);
+                bitmap = getScaleBitmapBlock(Blocks.WIN.getSprite(0));
                 break;
         }
     }
 
-    public void draw(Canvas canvas) {
-        Paint paint = new Paint();
-        if(bitmap != null){
-            switch (type) {
-                case 'Y': paint.setColor(Color.YELLOW); break;
-                case 'B': paint.setColor(Color.BLUE); break;
-                default: paint.setColor(Color.WHITE); break;
-            }
-        }
 
+    public void draw(Canvas canvas) {
+//        Paint paint = new Paint();
+//        switch (type) {
+//            case 'Y': paint.setColor(Color.YELLOW); break;
+//            case 'B': paint.setColor(Color.BLUE); break;
+//            default: paint.setColor(Color.WHITE); break;
+//        }
         
-        if(type != '1' && type != 'R' && type != 'W') {
-            canvas.drawRect(x + tileOffsetX, y + tileOffsetY, x + size + tileOffsetX, y + size + tileOffsetY, paint);
-        }
-        else {
+//        if(type != '1' && type != 'R' && type != 'W') {
+//            canvas.drawRect(x + tileOffsetX, y + tileOffsetY, x + size + tileOffsetX, y + size + tileOffsetY, paint);
+//        }
+//        else {
             canvas.drawBitmap(bitmap, x + tileOffsetX, y + tileOffsetY, null);
-        }
+//        }
 //        System.out.println(size);
     }
 

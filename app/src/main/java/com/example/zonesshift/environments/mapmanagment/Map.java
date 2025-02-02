@@ -40,7 +40,13 @@ public class Map {
     }
 
 
-
+    public void updateBitmap(){
+        for (Tile[] row : tiles){
+            for (Tile tile : row){
+                if(tile != null) tile.updateBitmap();
+            }
+        }
+    }
 
 
     public void draw(Canvas c){
@@ -90,4 +96,6 @@ public class Map {
     public float getTileOffsetY() {
         return tileOffsetY;
     }
+
+
 }
