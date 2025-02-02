@@ -1,18 +1,16 @@
 package com.example.zonesshift.environments.mapmanagment;
 
-import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_HEIGHT;
 
 import android.content.Context;
 import android.graphics.PointF;
 
 import com.example.zonesshift.entities.GameCharacters;
 import com.example.zonesshift.entities.Player;
-import com.example.zonesshift.gamestates.Playing;
 import com.example.zonesshift.main.MainActivity;
 import com.example.zonesshift.environments.Tile;
+import com.example.zonesshift.environments.Blocks;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,7 +18,7 @@ import java.util.ArrayList;
 
 public class MapManager {
     private String[] mapNames = {"map1.txt", "map2.txt"};
-    private static int currentMapId = 1;
+    private static int currentMapId;
     private static ArrayList<Map> maps = new ArrayList<Map>();
     private static Map currentMap;
     private static Player player;
@@ -77,6 +75,9 @@ public class MapManager {
         float[] cords = currentMap.getPlayerCords();
         player = new Player(new PointF( cords[0], cords[1]));
         GameCharacters.PLAYER.setPlayerBitmap(currentMap.getTileSize());
+        Blocks.REDZONE.updateBitmap();
+        Blocks.SOLID.updateBitmap();
+        Blocks.WIN.updateBitmap();
 //        Playing.setPlayerCords(maps.get(currentMap).getPlayerCords(maps.get(currentMap).getTiles()));
     }
 
@@ -86,10 +87,8 @@ public class MapManager {
         GameCharacters.PLAYER.setPlayerBitmap(currentMap.getTileSize());
     }
 
-    public static void nextMap(){
-        currentMap = maps.get(++currentMapId);
-        float[] cords = currentMap.getPlayerCords();
-        player = new Player(new PointF( cords[0], cords[1]));
+    public void nextMap(){
+        this.setCurrentMap(++currentMapId);
     }
 
     public Player getPlayer() {

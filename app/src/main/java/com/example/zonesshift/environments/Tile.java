@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 import com.example.zonesshift.gamestates.Playing;
-import com.example.zonesshift.environments.mapmanagment.MapManager;
 
 
 public class Tile {
@@ -18,6 +17,8 @@ public class Tile {
     private int tileOffsetX;
     private int tileOffsetY;
     private static boolean inRedZone;
+    private int textureID;
+    private Bitmap bitmap = null;
 
     public Tile(int x, int y, int size, char type) {
         this.x = x;
@@ -30,26 +31,34 @@ public class Tile {
         this.size = size;
         x *= size;
         y *= size;
+        setBitmap();
 //        System.out.println(this.size);
     }
 
-    public void draw(Canvas canvas, int tileOffsetX, int tileOffsetY, int tileTexture) {
-        Paint paint = new Paint();
-        Bitmap bitmap = null;
+    private void setBitmap(){
         switch (type) {
-            case '1': paint.setColor(Color.GRAY);
-                bitmap = Blocks.SOLID.getSprite(tileTexture);
+            case '1':
+                bitmap = Blocks.SOLID.getSprite(textureID);
                 break;
-            case 'R': paint.setColor(Color.RED);
-                bitmap = Blocks.REDZONE.getSprite(tileTexture);
+            case 'R':
+                bitmap = Blocks.REDZONE.getSprite(textureID);
                 break;
-            case 'Y': paint.setColor(Color.YELLOW); break;
-            case 'B': paint.setColor(Color.BLUE); break;
-            case 'W': paint.setColor(Color.GREEN);
+            case 'W':
                 bitmap = Blocks.WIN.getSprite(0);
                 break;
-            default: paint.setColor(Color.WHITE); break;
         }
+    }
+
+    public void draw(Canvas canvas) {
+        Paint paint = new Paint();
+        if(bitmap != null){
+            switch (type) {
+                case 'Y': paint.setColor(Color.YELLOW); break;
+                case 'B': paint.setColor(Color.BLUE); break;
+                default: paint.setColor(Color.WHITE); break;
+            }
+        }
+
         
         if(type != '1' && type != 'R' && type != 'W') {
             canvas.drawRect(x + tileOffsetX, y + tileOffsetY, x + size + tileOffsetX, y + size + tileOffsetY, paint);
@@ -57,8 +66,6 @@ public class Tile {
         else {
             canvas.drawBitmap(bitmap, x + tileOffsetX, y + tileOffsetY, null);
         }
-        this.tileOffsetX = tileOffsetX;
-        this.tileOffsetY = tileOffsetY;
 //        System.out.println(size);
     }
 
@@ -71,12 +78,47 @@ public class Tile {
                     inRedZone = true;
                     break;
                 case 'W':
-                    MapManager.nextMap();
+                    playing.nextMap();
                 case '1':
                     return true;
             }
         }
         return false;
+    }
+
+    public int determineTexture(Tile[][] map, int y, int x, char type){
+        boolean up = y > 0 && map[y - 1][x] != null && map[y - 1][x].getType() == type;
+        boolean down = y < map.length - 1 && map[y + 1][x] != null && map[y + 1][x].getType() == type;
+        boolean left = x > 0 && map[y][x - 1] != null && map[y][x - 1].getType() == type;
+        boolean right = x < map[0].length - 1 && map[y][x + 1] != null && map[y][x + 1].getType() == type;
+
+        //Border on one side
+        if (up && down && left && right) return 5;
+        if (!up && down && left && right) return 1;
+        if (up && !down && left && right) return 9;
+        if (up && down && !left && right) return 4;
+        if (up && down && left && !right) return 6;
+
+        //Borders on adjacent sides
+        if (!up && down && !left && right) return 0;
+        if (!up && down && left && !right) return 2;
+        if (up && !down && !left && right) return 8;
+        if (up && !down && left && !right) return 10;
+
+        //Borders on all sides
+        if (!up && !down && !left && !right) return 14;
+
+        //Borders on three sides
+        if (!up && !down && !left && right) return 11;
+        if (!up && !down && left && !right) return 15;
+        if (!up && down && !left && !right) return 3;
+        if (up && !down && !left && !right) return 7;
+
+        if (up && down && !left && !right) return 12;
+        if (!up && !down && left && right) return 13;
+
+
+        return 14; // Default case
     }
 
     public static boolean isInRedZone() {
@@ -85,5 +127,14 @@ public class Tile {
 
     public char getType() {
         return type;
+    }
+
+    public void setTextureID(int textureID) {
+        this.textureID = textureID;
+    }
+
+    public void setTileOffsets(int tileOffsetX, int tileOffsetY) {
+        this.tileOffsetX = tileOffsetX;
+        this.tileOffsetY = tileOffsetY;
     }
 }

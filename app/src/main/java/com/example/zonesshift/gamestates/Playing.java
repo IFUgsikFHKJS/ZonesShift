@@ -33,6 +33,10 @@ public class Playing extends BaseState implements GameStateInterface {
         return mapManager.getCurrentMap().getTiles();
     }
 
+    public void nextMap(){
+        mapManager.nextMap();
+    }
+
     @Override
     public void update(double delta) {
         mapManager.getPlayer().updatePlayerMove(delta);
