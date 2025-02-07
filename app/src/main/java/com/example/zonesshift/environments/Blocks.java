@@ -12,7 +12,10 @@ public enum Blocks implements BitmapMethods {
 
     SOLID(R.drawable.block_solid, 4, 4),
     REDZONE(R.drawable.block_redzone, 4, 4),
-    WIN(R.drawable.win,1,1);
+    GRAVIZONE(R.drawable.gravitation_zone, 3, 1),
+    WIN(R.drawable.win,1,1),
+    BACKGROUND(R.drawable.background, 1, 1);
+
 
     private Bitmap[] sprites;
 

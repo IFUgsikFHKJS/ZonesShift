@@ -34,9 +34,10 @@ public class Player extends Character{
     private int tileSize;
 
     //For zones
-    public static boolean inRedZone;
+    private boolean inRedZone;
+    private byte gravitationDirection;
 
-    //UI
+
 
 
     public Player(PointF p) {
@@ -101,6 +102,7 @@ public class Player extends Character{
             }
         }
         inRedZone = Tile.isInRedZone();
+
         if(!movePlayer || inRedZone) {
             if (xSpeed != 0)
                 xSpeed -= xSpeed > 0 ? maxSpeed / 50 : -maxSpeed / 50;
@@ -124,6 +126,7 @@ public class Player extends Character{
         for (Tile[] row : tiles) {
             for (Tile tile : row) {
                 if (checkCollisions(tile)) {
+//                    System.out.println(9);
                     xSpeed = xDiff > 0 ? minSpeed : -minSpeed;
                     if (xDiff == 0) {
                         xSpeed = 0;
@@ -132,6 +135,7 @@ public class Player extends Character{
                 }
             }
         }
+
 
         x += xSpeed * -1;
     }
@@ -171,8 +175,41 @@ public class Player extends Character{
 
     public void updatePlayerJump(double delta){
 
+
+
         Tile[][] tiles = Playing.getTiles();
 
+        loop:
+        for (Tile[] row : tiles) {
+            for (Tile tile : row) {
+                if (tile != null) { tile.checkCollision(getHitbox().left + x ,
+                        getHitbox().top + y,
+                        getHitbox().right + x,
+                        getHitbox().bottom + y);}
+                if (Tile.getGravitationDirection() != 0)
+                    break loop;
+            }
+        }
+
+        gravitationDirection = Tile.getGravitationDirection();
+
+
+        switch (gravitationDirection){
+            case 0:
+                jumpGravitationDown(tiles);
+                break;
+            case 1:
+                jumpGravitationUp(tiles);
+                break;
+        }
+
+        y += ySpeed;
+
+    }
+
+
+
+    private void jumpGravitationDown(Tile[][] tiles) {
         if(isJumping){
             ySpeed += maxJumpSpeed / 25;
         }
@@ -188,26 +225,66 @@ public class Player extends Character{
         for (Tile[] row : tiles) {
             for (Tile tile : row) {
 
-                if (tile != null) {if(tile.checkCollision(getHitbox().left + x,
-                        getHitbox().top + y + ySpeed,
-                        getHitbox().right + x,
-                        getHitbox().bottom + y + ySpeed)){
+                if (tile != null) {
+                    if (tile.checkCollision(getHitbox().left + x,
+                            getHitbox().top + y + ySpeed,
+                            getHitbox().right + x,
+                            getHitbox().bottom + y + ySpeed)) {
 
-                    if(ySpeed >= 0)
-                        isJumping = false;
-                    ySpeed = 0;
-                    return;
 
-                }} else if (ySpeed == 0) {
-                    ySpeed += maxJumpSpeed / 25;
-                    isJumping = true;
+                        if (ySpeed >= 0)
+                            isJumping = false;
+                        ySpeed = 0;
+                        return;
+
+                    } else if (ySpeed == 0) {
+
+                        ySpeed += maxJumpSpeed / 25;
+                        isJumping = true;
+                    }
                 }
-
             }
         }
 
-        y += ySpeed;
+    }
 
+    private void jumpGravitationUp(Tile[][] tiles) {
+        if(isJumping){
+            ySpeed -= maxJumpSpeed / 25;
+        }
+
+
+        if (yDiff <= -100 && !isJumping && !inRedZone) {
+            ySpeed = maxJumpSpeed;
+            isJumping = true;
+        }
+
+
+
+        for (Tile[] row : tiles) {
+            for (Tile tile : row) {
+
+                if (tile != null) {
+                    if (tile.checkCollision(getHitbox().left + x,
+                            getHitbox().top + y + ySpeed,
+                            getHitbox().right + x,
+                            getHitbox().bottom + y + ySpeed)) {
+
+
+                        if (ySpeed <= 0)
+                            isJumping = false;
+//                    if(ySpeed < 0)
+//                        y++;
+                        ySpeed = 0;
+                        return;
+
+                    } else if (ySpeed == 0) {
+                        ySpeed -= maxJumpSpeed / 25;
+                        isJumping = true;
+                    }
+                }
+            }
+        }
     }
 
     private boolean checkCollisions(Tile tile){
@@ -219,10 +296,7 @@ public class Player extends Character{
     }
 
 
-    public void setPlayerCords(float[] cords){
-        x = cords[0];
-        y = cords[1];
-    }
+
 
 //    public void update(double delta, boolean movePlayer){
 //        if(movePlayer)

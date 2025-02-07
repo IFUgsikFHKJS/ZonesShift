@@ -1,5 +1,9 @@
 package com.example.zonesshift.gamestates;
 
+import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_HEIGHT;
+import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_WIDTH;
+
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 
@@ -7,13 +11,15 @@ import androidx.annotation.NonNull;
 
 import com.example.zonesshift.entities.Character;
 import com.example.zonesshift.Game;
+import com.example.zonesshift.environments.Blocks;
 import com.example.zonesshift.environments.Tile;
+import com.example.zonesshift.helpers.interfaces.BitmapMethods;
 import com.example.zonesshift.helpers.interfaces.GameStateInterface;
 import com.example.zonesshift.environments.mapmanagment.MapManager;
 import com.example.zonesshift.ui.ButtonImages;
 import com.example.zonesshift.ui.CustomButton;
 
-public class Playing extends BaseState implements GameStateInterface {
+public class Playing extends BaseState implements GameStateInterface, BitmapMethods {
 
     private static MapManager mapManager;
     private CustomButton btnRestart;
@@ -21,7 +27,7 @@ public class Playing extends BaseState implements GameStateInterface {
     public Playing(Game game){
         super(game);
         mapManager = new MapManager();
-        mapManager.setCurrentMap(2);
+        mapManager.setCurrentMap(0);
         btnRestart = new CustomButton(20, 20, ButtonImages.LVL_RESTART.getWidth(), ButtonImages.LVL_RESTART.getHeight());
     }
 
@@ -52,6 +58,8 @@ public class Playing extends BaseState implements GameStateInterface {
                 btnRestart.getHitbox().left,
                 btnRestart.getHitbox().top, null);
     }
+
+
 
     @Override
     public void touchEvents(MotionEvent event) {

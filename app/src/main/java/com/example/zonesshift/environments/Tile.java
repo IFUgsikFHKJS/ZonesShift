@@ -19,6 +19,7 @@ public class Tile implements BitmapMethods {
     private int tileOffsetX;
     private int tileOffsetY;
     private static boolean inRedZone;
+    private static byte gravitationDirection;
     private int textureID;
     private Bitmap bitmap = null;
 
@@ -47,6 +48,8 @@ public class Tile implements BitmapMethods {
             case 'W':
                 bitmap = getScaleBitmapBlock(Blocks.WIN.getSprite(0));
                 break;
+            case 'G':
+                bitmap = getScaleBitmapBlock(Blocks.GRAVIZONE.getSprite(0));
         }
     }
 
@@ -54,31 +57,41 @@ public class Tile implements BitmapMethods {
     public void draw(Canvas canvas) {
 //        Paint paint = new Paint();
 //        switch (type) {
-//            case 'Y': paint.setColor(Color.YELLOW); break;
-//            case 'B': paint.setColor(Color.BLUE); break;
-//            default: paint.setColor(Color.WHITE); break;
+//            case 'G': case 'g': case 'ℊ': paint.setColor(Color.YELLOW); paint.setAlpha(100); break;
+////            case 'B': paint.setColor(Color.BLUE); break;
+////            default: paint.setColor(Color.WHITE); break;
 //        }
         
-//        if(type != '1' && type != 'R' && type != 'W') {
+//        if(type == 'G' || type == 'g' || type == 'ℊ') {
 //            canvas.drawRect(x + tileOffsetX, y + tileOffsetY, x + size + tileOffsetX, y + size + tileOffsetY, paint);
 //        }
 //        else {
             canvas.drawBitmap(bitmap, x + tileOffsetX, y + tileOffsetY, null);
 //        }
-//        System.out.println(size);
     }
 
     public boolean checkCollision(float playerX,float playerY,float playerWidth,float playerHeight) {
         inRedZone = false;
+        gravitationDirection = 0;
         if(playerX < x + tileOffsetX + size && playerWidth > x + tileOffsetX &&
                 playerY < y + size + tileOffsetY && playerHeight > y + tileOffsetY){
             switch (type){
                 case 'R':
                     inRedZone = true;
                     break;
+                case 'G':
+                    gravitationDirection = 1;
+                    break;
+                case 'ℊ':
+                    gravitationDirection = 2;
+                    break;
+                case 'g':
+                    gravitationDirection = 3;
+                    break;
                 case 'W':
                     playing.nextMap();
                 case '1':
+//                    System.out.println(playerY + " " + ( y + size + tileOffsetY) + " " + playerHeight + " " + (y + tileOffsetY));
                     return true;
             }
         }
@@ -123,6 +136,11 @@ public class Tile implements BitmapMethods {
     public static boolean isInRedZone() {
         return inRedZone;
     }
+
+    public static byte getGravitationDirection(){
+        return gravitationDirection;
+    }
+
 
     public char getType() {
         return type;

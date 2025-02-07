@@ -1,7 +1,12 @@
 package com.example.zonesshift.environments.mapmanagment;
 
 
+import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_HEIGHT;
+import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_WIDTH;
+
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.PointF;
 
 import com.example.zonesshift.entities.GameCharacters;
@@ -17,7 +22,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class MapManager {
-    private String[] mapNames = {"map1.txt", "map2.txt", "map3.txt"};
+    private String[] mapNames = {"map1.txt", "map2.txt", "map3.txt", "map4.txt", "map5.txt", "map6.txt", "map7.txt"};
     private static int currentMapId;
     private static ArrayList<Map> maps = new ArrayList<Map>();
     private static Map currentMap;
@@ -77,8 +82,18 @@ public class MapManager {
         float[] cords = currentMap.getPlayerCords();
         player = new Player(new PointF( cords[0], cords[1]));
         GameCharacters.PLAYER.setPlayerBitmap(currentMap.getTileSize());
+
         currentMap.updateBitmap();
 //        Playing.setPlayerCords(maps.get(currentMap).getPlayerCords(maps.get(currentMap).getTiles()));
+    }
+
+    private void drawBackground(Canvas c) {
+        for (int y = 0; y < GAME_HEIGHT / currentMap.getTileSize() + 1; y++){
+            for (int x = 0; x < GAME_WIDTH / currentMap.getTileSize() + 1; x++){
+                Bitmap bitmap = (Blocks.BACKGROUND.getSprite(0));
+                c.drawBitmap(bitmap, x, y, null);
+            }
+        }
     }
 
     public void restartCurrentMap(){

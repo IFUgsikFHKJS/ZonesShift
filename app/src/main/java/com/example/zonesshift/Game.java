@@ -9,6 +9,7 @@ import android.view.SurfaceHolder;
 import com.example.zonesshift.environments.Tile;
 import com.example.zonesshift.gamestates.Playing;
 import com.example.zonesshift.main.GameLoop;
+import com.example.zonesshift.main.MainActivity;
 
 public class Game {
 
@@ -36,7 +37,7 @@ public class Game {
     public void render(){
         Canvas c = holder.lockCanvas();
 
-        c.drawColor(Color.BLACK);
+        c.drawColor(MainActivity.getGameContext().getColor(R.color.background));
 
         playing.render(c);
 
