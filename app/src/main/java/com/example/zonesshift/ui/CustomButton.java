@@ -2,6 +2,7 @@ package com.example.zonesshift.ui;
 
 
 import android.graphics.RectF;
+import android.view.MotionEvent;
 
 public class CustomButton {
 
@@ -23,5 +24,9 @@ public class CustomButton {
 
     public void setPushed(boolean pushed) {
         this.pushed = pushed;
+    }
+
+    public boolean isIn(MotionEvent e) {
+        return getHitbox().contains(e.getX(), e.getY());
     }
 }

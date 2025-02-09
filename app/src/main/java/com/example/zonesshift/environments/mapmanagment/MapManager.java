@@ -87,14 +87,6 @@ public class MapManager {
 //        Playing.setPlayerCords(maps.get(currentMap).getPlayerCords(maps.get(currentMap).getTiles()));
     }
 
-    private void drawBackground(Canvas c) {
-        for (int y = 0; y < GAME_HEIGHT / currentMap.getTileSize() + 1; y++){
-            for (int x = 0; x < GAME_WIDTH / currentMap.getTileSize() + 1; x++){
-                Bitmap bitmap = (Blocks.BACKGROUND.getSprite(0));
-                c.drawBitmap(bitmap, x, y, null);
-            }
-        }
-    }
 
     public void restartCurrentMap(){
         float[] cords = currentMap.getPlayerCords();

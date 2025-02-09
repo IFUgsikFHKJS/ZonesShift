@@ -18,7 +18,11 @@ public interface BitmapMethods {
         return Bitmap.createScaledBitmap(bitmap, tileSize * 2, tileSize * 2, false);
     }
 
-    default Bitmap getScaleBitmapBlock(Bitmap bitmap){
-        return Bitmap.createScaledBitmap(bitmap, Playing.getTileSize(), Playing.getTileSize(), false);
+    default Bitmap getScaledBitmap(Bitmap bitmap){
+        return Bitmap.createScaledBitmap(bitmap, (int) (Playing.getTileSize()), (int) (Playing.getTileSize()), false);
+    }
+
+    default Bitmap getScaledBitmapButton(Bitmap bitmap, int width, int height){
+        return Bitmap.createScaledBitmap(bitmap, width, height, false);
     }
 }

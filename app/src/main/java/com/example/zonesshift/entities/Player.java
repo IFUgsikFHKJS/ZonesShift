@@ -120,7 +120,7 @@ public class Player extends Character{
         }
 
 
-        if (!isJumping && !inRedZone)
+        if (!isJumping || gravitationDirection == 1)
             xSpeed = calculateSpeed(delta);
 
         for (Tile[] row : tiles) {

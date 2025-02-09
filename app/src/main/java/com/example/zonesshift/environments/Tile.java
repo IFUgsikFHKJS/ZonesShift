@@ -3,8 +3,6 @@ package com.example.zonesshift.environments;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 
 
 import com.example.zonesshift.gamestates.Playing;
@@ -40,16 +38,16 @@ public class Tile implements BitmapMethods {
     public void updateBitmap(){
         switch (type) {
             case '1':
-                bitmap = getScaleBitmapBlock(Blocks.SOLID.getSprite(textureID));
+                bitmap = getScaledBitmap(Blocks.SOLID.getSprite(textureID));
                 break;
             case 'R':
-                bitmap = getScaleBitmapBlock(Blocks.REDZONE.getSprite(textureID));
+                bitmap = getScaledBitmap(Blocks.REDZONE.getSprite(textureID));
                 break;
             case 'W':
-                bitmap = getScaleBitmapBlock(Blocks.WIN.getSprite(0));
+                bitmap = getScaledBitmap(Blocks.WIN.getSprite(0));
                 break;
             case 'G':
-                bitmap = getScaleBitmapBlock(Blocks.GRAVIZONE.getSprite(0));
+                bitmap = getScaledBitmap(Blocks.GRAVIZONE.getSprite(0));
         }
     }
 
