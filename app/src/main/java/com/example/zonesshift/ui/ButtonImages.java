@@ -12,8 +12,9 @@ import com.example.zonesshift.main.MainActivity;
 
 public enum ButtonImages implements BitmapMethods {
 
-    LVL_RESTART(R.drawable.button_restart, 112, 112,  GAME_WIDTH / 13, GAME_WIDTH / 13),
+    LVL_RESTART(R.drawable.button_restart, 16, 16,  GAME_WIDTH / 13, GAME_WIDTH / 13),
     MENU_SINGLEPLAYER(R.drawable.button_singleplayer, 128, 32, (int) (GAME_WIDTH / 3.7), (int) (GAME_WIDTH / (3.7 * 128) * 32)),
+    PLAYING_TO_LVL(R.drawable.button_lvls, 16, 16, GAME_WIDTH / 13, GAME_WIDTH / 13),
     LVL1(R.drawable.button_lvl1, 32, 32, GAME_WIDTH / 13, GAME_WIDTH / 13),
     LVL2(R.drawable.button_lvl2, 32, 32, GAME_WIDTH / 13, GAME_WIDTH / 13),
     LVL3(R.drawable.button_lvl3, 32, 32, GAME_WIDTH / 13, GAME_WIDTH / 13),

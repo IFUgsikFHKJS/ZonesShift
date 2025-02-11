@@ -29,13 +29,14 @@ public class Playing extends BaseState implements GameStateInterface, BitmapMeth
 
     private static MapManager mapManager;
     private CustomButton btnRestart;
+    private CustomButton btnLvls;
 
     public Playing(Game game){
         super(game);
         mapManager = new MapManager();
         setCurrentMap(0);
         btnRestart = new CustomButton(20, 20, ButtonImages.LVL_RESTART.getWidth(), ButtonImages.LVL_RESTART.getHeight());
-    }
+        btnLvls = new CustomButton(GAME_WIDTH - 20 - ButtonImages.PLAYING_TO_LVL.getWidth(), 20, ButtonImages.PLAYING_TO_LVL.getWidth(), ButtonImages.PLAYING_TO_LVL.getHeight());}
 
     public void setCurrentMap(int mapID){
         mapManager.setCurrentMap(mapID);
@@ -63,10 +64,18 @@ public class Playing extends BaseState implements GameStateInterface, BitmapMeth
     public void render(Canvas c){
         mapManager.getPlayer().drawPlayer(c);
         mapManager.getCurrentMap().draw(c);
+        drawButtons(c);
+    }
+
+    private void drawButtons(Canvas c){
         c.drawBitmap(
                 ButtonImages.LVL_RESTART.getBtnImg(btnRestart.isPushed()),
                 btnRestart.getHitbox().left,
                 btnRestart.getHitbox().top, null);
+        c.drawBitmap(
+                ButtonImages.PLAYING_TO_LVL.getBtnImg(btnLvls.isPushed()),
+                btnLvls.getHitbox().left,
+                btnLvls.getHitbox().top, null);
     }
 
 
@@ -75,19 +84,25 @@ public class Playing extends BaseState implements GameStateInterface, BitmapMeth
     @Override
     public void touchEvents(MotionEvent event) {
 
-        if(!btnRestart.isIn(event)){
+        if(!btnRestart.isIn(event) && !btnLvls.isIn(event)){
             mapManager.getPlayer().touchEvents(event);
         }
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             if (btnRestart.isIn(event))
                 btnRestart.setPushed(true);
+            else if (btnLvls.isIn(event))
+                btnLvls.setPushed(true);
         } else if (event.getAction() == MotionEvent.ACTION_UP) {
             if (btnRestart.isIn(event))
                 if (btnRestart.isPushed())
                     mapManager.restartCurrentMap();
+            if (btnLvls.isIn(event))
+                if (btnLvls.isPushed())
+                    game.setCurrentGameState(Game.GameState.MENU);
 
             btnRestart.setPushed(false);
+            btnLvls.setPushed(false);
         }
     }
 
