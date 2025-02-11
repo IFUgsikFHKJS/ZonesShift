@@ -39,7 +39,6 @@ public class MapManager {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            System.out.println(y + " " + x);
             Tile[][] tiles = MapLoader.loadMap(MainActivity.getGameContext(), "maps/" + mapName, y, x);
 //            for (Tile[] row : tiles) {
 //                for (Tile tile : row) {

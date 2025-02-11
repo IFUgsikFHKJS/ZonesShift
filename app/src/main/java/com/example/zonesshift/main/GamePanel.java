@@ -42,6 +42,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-
+        game.stopGameLoop();
     }
 }

@@ -4,12 +4,12 @@ import com.example.zonesshift.Game;
 
 public class GameLoop implements Runnable{
 
-    private final Thread gameThread;
+    private Thread gameThread;
     private final Game game;
+    private boolean isRunning = false;
 
     public GameLoop(Game game){
         this.game = game;
-        gameThread = new Thread(this);
     }
     @Override
     public void run() {
@@ -18,7 +18,7 @@ public class GameLoop implements Runnable{
 
         long lastDelta = System.nanoTime();
         long nanoSec = 1_000_000_000;
-        while (true) {
+        while (isRunning) {
 
             long nowDelta = System.nanoTime();
             double timeSinceLastDelta = nowDelta - lastDelta;
@@ -36,6 +36,21 @@ public class GameLoop implements Runnable{
     }
 
     public void startGameLoop() {
-        gameThread.start();
+        if (gameThread == null || !isRunning) {
+            isRunning = true;
+            gameThread = new Thread(this);
+            gameThread.start();
+        }
+    }
+
+    public void stopGameLoop() {
+        isRunning = false;
+        try {
+            if (gameThread != null) {
+                gameThread.join(); // Wait for the thread to finish
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

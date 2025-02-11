@@ -1,6 +1,7 @@
 package com.example.zonesshift.main;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -8,6 +9,10 @@ import android.view.View;
 import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.zonesshift.authentication.LoginActivity;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -43,12 +48,22 @@ public class MainActivity extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        boolean fromProfile = getIntent().getBooleanExtra("fromProfile", false);
+        System.out.println(fromProfile);
+        System.out.println(FirebaseAuth.getInstance().getCurrentUser() == null);
+        if (FirebaseAuth.getInstance().getCurrentUser() == null && !fromProfile) {
+            Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(loginIntent);
+            finish();
+            return;
+        }
+
+
 
         setContentView(new GamePanel(this));
 
 
 
-        System.out.println((float) GAME_WIDTH / GAME_HEIGHT + " " + GAME_WIDTH + " " + GAME_HEIGHT + " " + GAME_WIDTH_RES + " " + GAME_HEIGHT_RES);
     }
 
     public static Context getGameContext(){

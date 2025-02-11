@@ -21,8 +21,6 @@ public class Map {
 //        while (tileSize % 32 != 0){
 //            tileSize--;
 //        }
-        System.out.println("Size " + tileSize);
-        System.out.println(GAME_WIDTH);
         while (tileSize * tiles.length > GAME_HEIGHT){
             tileSize -= 1;
         }
@@ -70,7 +68,6 @@ public class Map {
                     if (tiles[y][x].getType() == 'P') {
                         cords[0] = x * tileSize + tileOffsetX;
                         cords[1] = y * tileSize + tileOffsetY;
-                        System.out.println("CORDS " +cords[0] + " " + cords[1] + " " + getTileSize());
 
                     }
                 }

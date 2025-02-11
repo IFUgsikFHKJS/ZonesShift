@@ -13,10 +13,15 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.zonesshift.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
     private EditText email, username, password;
     private Button btnRegister;
 
@@ -27,6 +32,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         email = findViewById(R.id.email);
         username = findViewById(R.id.username);
@@ -40,7 +46,7 @@ public class RegisterActivity extends AppCompatActivity {
             if (txt_email.isEmpty() || txt_password.isEmpty() || txt_username.isEmpty()) {
                 Toast.makeText(RegisterActivity.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             } else {
-                registerUser(txt_email, txt_password);
+                registerUser(txt_email, txt_password, txt_username);
             }
         });
 
@@ -52,18 +58,32 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
 
-    private void registerUser(String email, String password) {
+    private void registerUser(String email, String password, String username) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        mAuth.getCurrentUser().sendEmailVerification()
-                                .addOnCompleteListener(emailTask -> {
-                                    if (task.isSuccessful()) {
-                                        Toast.makeText(RegisterActivity.this, "Verification email sent. Please check your inbox.", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        Toast.makeText(RegisterActivity.this, "Failed to send verification email.", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                        String userId = mAuth.getCurrentUser().getUid();
+
+                        Map<String, Object> user = new HashMap<>();
+                        user.put("username", username);
+                        user.put("email", email);
+
+                        db.collection("users").document(userId)
+                                .set(user)
+                                .addOnSuccessListener(aVoid -> {
+                                    mAuth.getCurrentUser().sendEmailVerification()
+                                            .addOnCompleteListener(emailTask -> {
+                                                if (emailTask.isSuccessful()) {
+                                                    Toast.makeText(RegisterActivity.this, "Verification email sent. Please check your inbox.", Toast.LENGTH_SHORT).show();
+                                                } else {
+                                                    Toast.makeText(RegisterActivity.this, "Failed to send verification email.", Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                })
+                                .addOnFailureListener(e ->
+                                        Toast.makeText(RegisterActivity.this, "Failed to save user data.", Toast.LENGTH_SHORT).show()
+                                );
+
                     } else {
                         String errorMessage = task.getException() != null ? task.getException().getMessage() : "Registration Failed";
                         Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_SHORT).show();

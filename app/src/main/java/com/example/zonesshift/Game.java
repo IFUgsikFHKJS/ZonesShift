@@ -53,19 +53,18 @@ public class Game {
 
     }
 
-    public void render(){
+    public void render() {
         Canvas c = holder.lockCanvas();
+        if (c != null) { // ✅ Check if canvas is not null
+            c.drawColor(MainActivity.getGameContext().getColor(R.color.background));
 
-        c.drawColor(MainActivity.getGameContext().getColor(R.color.background));
+            switch (currentGameState) {
+                case MENU -> menu.render(c);
+                case PLAYING -> playing.render(c);
+            }
 
-
-        switch (currentGameState){
-            case MENU -> menu.render(c);
-            case PLAYING -> playing.render(c);
+            holder.unlockCanvasAndPost(c);
         }
-
-
-        holder.unlockCanvasAndPost(c);
     }
 
     public enum GameState{
@@ -90,6 +89,10 @@ public class Game {
 
     public void startGameLoop() {
         gameLoop.startGameLoop();
+    }
+
+    public void stopGameLoop() {
+        gameLoop.stopGameLoop();
     }
 
 }
