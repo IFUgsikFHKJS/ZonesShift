@@ -1,5 +1,6 @@
 package com.example.zonesshift;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.view.MotionEvent;
@@ -19,7 +20,6 @@ public class Game {
     private Playing playing;
     private GameLoop gameLoop;
 
-    private StartMenu startMenu;
 
     private GameState currentGameState = GameState.MENU;
 
@@ -29,7 +29,6 @@ public class Game {
         initGameStates();
         Tile.playing = playing;
 
-        startMenu = new StartMenu(this);
     }
 
     private void initGameStates() {
@@ -55,7 +54,7 @@ public class Game {
 
     public void render() {
         Canvas c = holder.lockCanvas();
-        if (c != null) { // ✅ Check if canvas is not null
+        if (c != null) {
             c.drawColor(MainActivity.getGameContext().getColor(R.color.background));
 
             switch (currentGameState) {
@@ -94,5 +93,7 @@ public class Game {
     public void stopGameLoop() {
         gameLoop.stopGameLoop();
     }
+
+
 
 }

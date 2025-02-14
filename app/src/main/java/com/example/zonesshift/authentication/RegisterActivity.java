@@ -1,5 +1,6 @@
 package com.example.zonesshift.authentication;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,7 +13,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.zonesshift.R;
+import com.example.zonesshift.main.MainActivity;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -23,7 +26,7 @@ public class RegisterActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private EditText email, username, password;
-    private Button btnRegister;
+    private Button btnRegister, btnVerification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,7 @@ public class RegisterActivity extends AppCompatActivity {
         username = findViewById(R.id.username);
         password = findViewById(R.id.password);
         btnRegister = findViewById(R.id.btnRegister);
+        btnVerification = findViewById(R.id.btnVerification);
 
         btnRegister.setOnClickListener(v -> {
             String txt_email = email.getText().toString().trim();
@@ -50,6 +54,8 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
+        btnVerification.setOnClickListener(v -> checkEmailVerification());
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -59,6 +65,17 @@ public class RegisterActivity extends AppCompatActivity {
 
 
     private void registerUser(String email, String password, String username) {
+
+        if (!isValidUsername(username)) {
+            Toast.makeText(RegisterActivity.this, "Username can only contain letters and numbers (A-Z, a-z, 0-9).", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if(username.length() > 12){
+            Toast.makeText(RegisterActivity.this, "Username cannot be more than 12 letters long", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -89,5 +106,26 @@ public class RegisterActivity extends AppCompatActivity {
                         Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private boolean isValidUsername(String username) {
+        String regex = "^[a-zA-Z0-9]+$"; // Only A-Z, a-z, 0-9
+        return username.matches(regex);
+    }
+
+
+    private void checkEmailVerification() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            user.reload().addOnCompleteListener(task -> {
+                if (user.isEmailVerified()) {
+                    Toast.makeText(this, "Email Verified! Logging in...", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(this, MainActivity.class));
+                    finish();
+                } else {
+                    Toast.makeText(this, "Email is not verified yet. Please check your inbox.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 }

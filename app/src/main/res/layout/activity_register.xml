@@ -26,12 +26,25 @@
         android:layout_height="wrap_content"
         android:id="@+id/password"
         android:hint="password"/>
-    
-    <Button
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btnRegister"
-        android:gravity="center"
-        android:text="Register"/>
+        android:orientation="horizontal">
+    
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnRegister"
+            android:gravity="center"
+            android:text="Register"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnVerification"
+            android:gravity="center"
+            android:text="Check Verification"/>
+    </LinearLayout>
 
 </LinearLayout>

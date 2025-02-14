@@ -11,7 +11,6 @@ import android.view.WindowManager;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.zonesshift.authentication.LoginActivity;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 
 
@@ -48,22 +47,39 @@ public class MainActivity extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        boolean fromProfile = getIntent().getBooleanExtra("fromProfile", false);
-        System.out.println(fromProfile);
-        System.out.println(FirebaseAuth.getInstance().getCurrentUser() == null);
-        if (FirebaseAuth.getInstance().getCurrentUser() == null && !fromProfile) {
-            Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
-            startActivity(loginIntent);
-            finish();
-            return;
-        }
-
-
-
         setContentView(new GamePanel(this));
 
 
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        checkUserAuthentication();
+    }
+
+    private void checkUserAuthentication() {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        boolean fromProfile = getIntent().getBooleanExtra("fromProfile", false);
+        var currentUser = mAuth.getCurrentUser();
+
+        if (currentUser != null) {
+            // Force Firebase to refresh user data
+            currentUser.reload().addOnCompleteListener(task -> {
+                if (!task.isSuccessful() || mAuth.getCurrentUser() == null) {
+                    // User doesn't exist anymore or reload failed
+                    redirectToLogin();
+                }
+            });
+        } else if (!fromProfile) {
+            // No user is logged in
+            redirectToLogin();
+        }
+    }
+
+    public void redirectToLogin() {
+        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+        finish();
     }
 
     public static Context getGameContext(){

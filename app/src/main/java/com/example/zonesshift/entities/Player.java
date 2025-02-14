@@ -121,7 +121,12 @@ public class Player extends Character{
 
 
         if (!isJumping || gravitationDirection == 1)
-            xSpeed = calculateSpeed(delta);
+            if (gravitationDirection == 1 && Math.abs(xSpeed) < minSpeed && isJumping) {
+                xSpeed = xDiff > 0 ? minSpeed : -minSpeed;
+                System.out.println(true);
+            }
+            else
+                xSpeed = calculateSpeed(delta);
 
         for (Tile[] row : tiles) {
             for (Tile tile : row) {

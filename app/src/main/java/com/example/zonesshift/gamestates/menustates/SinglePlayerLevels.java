@@ -2,6 +2,7 @@ package com.example.zonesshift.gamestates.menustates;
 
 import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_HEIGHT;
 import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_WIDTH;
+import static com.example.zonesshift.ui.ButtonImages.HOME;
 
 import android.graphics.Canvas;
 import android.view.MotionEvent;
@@ -16,6 +17,7 @@ import com.example.zonesshift.ui.CustomButton;
 public class SinglePlayerLevels extends BaseState implements GameStateInterface {
     private ButtonImages[] lvlButtonImages = new ButtonImages[7];
     private CustomButton[] lvlButtons = new  CustomButton[7];
+    private CustomButton btnHome;
 
 
     public SinglePlayerLevels(Game game) {
@@ -35,13 +37,13 @@ public class SinglePlayerLevels extends BaseState implements GameStateInterface 
 
         int unit = GAME_WIDTH / 13;
 
-        int lvlNum = 0;
         for (int i = 0; i < lvlButtons.length; i++){
             lvlButtons[i] = new CustomButton(2 * unit + i % 5 * 2 * unit,
-                    unit +  ( lvlNum / 5) * 2 * unit,
+                    (i >= 5 ? unit / 2 : unit) + unit / 2 +  ( i / 5) * 2 * unit,
                     ButtonImages.LVL1.getWidth(), ButtonImages.LVL1.getHeight());
-            lvlNum++;
         }
+
+        btnHome = new CustomButton(unit / 2, unit / 2, HOME.getWidth(), HOME.getHeight());
     }
 
     @Override
@@ -61,6 +63,10 @@ public class SinglePlayerLevels extends BaseState implements GameStateInterface 
                     lvlButtons[i].getHitbox().left,
                     lvlButtons[i].getHitbox().top, null);
         }
+
+        c.drawBitmap(HOME.getBtnImg(btnHome.isPushed()),
+                btnHome.getHitbox().left,
+                btnHome.getHitbox().top, null);
     }
 
     @Override
@@ -73,6 +79,9 @@ public class SinglePlayerLevels extends BaseState implements GameStateInterface 
                 }
             }
 
+            if(btnHome.isIn(event))
+                btnHome.setPushed(true);
+
         } else if (event.getAction() == MotionEvent.ACTION_UP) {
             for (int i = 0; i < lvlButtons.length; i++){
                 if (lvlButtons[i].isIn(event))
@@ -84,7 +93,15 @@ public class SinglePlayerLevels extends BaseState implements GameStateInterface 
                     }
             }
 
+            if (btnHome.isIn(event))
+                if (btnHome.isPushed())
+                    game.getMenu().setCurrentMenuState(Menu.MenuState.START_MENU);
 
+
+            for (CustomButton button : lvlButtons){
+                button.setPushed(false);
+            }
+            btnHome.setPushed(false);
         }
     }
 }
