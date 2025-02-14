@@ -107,28 +107,25 @@ public class Tile implements BitmapMethods {
         if (!up && down && left && right) return 1;
         if (up && !down && left && right) return 9;
         if (up && down && !left && right) return 4;
-        if (up && down && left && !right) return 6;
+        if (up && down && left) return 6;
 
         //Borders on adjacent sides
         if (!up && down && !left && right) return 0;
-        if (!up && down && left && !right) return 2;
+        if (!up && down && left) return 2;
         if (up && !down && !left && right) return 8;
-        if (up && !down && left && !right) return 10;
+        if (up && !down && left) return 10;
 
         //Borders on all sides
         if (!up && !down && !left && !right) return 14;
 
         //Borders on three sides
-        if (!up && !down && !left && right) return 11;
-        if (!up && !down && left && !right) return 15;
-        if (!up && down && !left && !right) return 3;
-        if (up && !down && !left && !right) return 7;
+        if (!up && !down && !left) return 11;
+        if (!up && !down && !right) return 15;
+        if (!up && down) return 3;
+        if (up && !down) return 7;
 
-        if (up && down && !left && !right) return 12;
-        if (!up && !down && left && right) return 13;
-
-
-        return 14; // Default case
+        if (up) return 12;
+        return 13;
     }
 
     public static boolean isInRedZone() {
