@@ -16,7 +16,9 @@ import com.example.zonesshift.R;
 import com.example.zonesshift.main.MainActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -76,41 +78,68 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        String userId = mAuth.getCurrentUser().getUid();
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            String userId = mAuth.getCurrentUser().getUid();
 
-                        Map<String, Object> user = new HashMap<>();
-                        user.put("username", username);
-                        user.put("email", email);
+                            // Получаем максимальный user_id
+                            db.collection("users").orderBy("user_id", Query.Direction.DESCENDING).limit(1).get()
+                                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                                        int newUserId = 1; // По умолчанию первый ID
 
-                        db.collection("users").document(userId)
-                                .set(user)
-                                .addOnSuccessListener(aVoid -> {
-                                    mAuth.getCurrentUser().sendEmailVerification()
-                                            .addOnCompleteListener(emailTask -> {
-                                                if (emailTask.isSuccessful()) {
-                                                    Toast.makeText(RegisterActivity.this, "Verification email sent. Please check your inbox.", Toast.LENGTH_SHORT).show();
-                                                } else {
-                                                    Toast.makeText(RegisterActivity.this, "Failed to send verification email.", Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
-                                })
-                                .addOnFailureListener(e ->
-                                        Toast.makeText(RegisterActivity.this, "Failed to save user data.", Toast.LENGTH_SHORT).show()
-                                );
+                                        if (!queryDocumentSnapshots.isEmpty()) {
+                                            DocumentSnapshot lastUser = queryDocumentSnapshots.getDocuments().get(0);
+                                            newUserId = lastUser.getLong("user_id").intValue() + 1; // Увеличиваем ID
+                                        }
 
-                    } else {
-                        String errorMessage = task.getException() != null ? task.getException().getMessage() : "Registration Failed";
-                        Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                    }
-                });
+                                        Map<String, Object> user = new HashMap<>();
+                                        user.put("username", username);
+                                        user.put("email", email);
+                                        user.put("user_id", newUserId);
+
+                                        db.collection("users").document(userId).set(user)
+                                                .addOnSuccessListener(aVoid -> {
+                                                    mAuth.getCurrentUser().sendEmailVerification()
+                                                            .addOnCompleteListener(emailTask -> {
+                                                                if (emailTask.isSuccessful()) {
+                                                                    Toast.makeText(RegisterActivity.this, "Verification email sent. Please check your inbox.", Toast.LENGTH_SHORT).show();
+                                                                } else {
+                                                                    Toast.makeText(RegisterActivity.this, "Failed to send verification email.", Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            });
+                                                })
+                                                .addOnFailureListener(e ->
+                                                        Toast.makeText(RegisterActivity.this, "Failed to save user data.", Toast.LENGTH_SHORT).show()
+                                                );
+                                    });
+
+                        } else {
+                            String errorMessage = task.getException() != null ? task.getException().getMessage() : "Registration Failed";
+                            Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                        }
+                    });
     }
 
     private boolean isValidUsername(String username) {
         String regex = "^[a-zA-Z0-9]+$"; // Only A-Z, a-z, 0-9
         return username.matches(regex);
+    }
+
+    public static void updateUserIDs(){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("users").get().addOnSuccessListener(queryDocumentSnapshots -> {
+            int counter = 1; // Начальный ID (можно взять из последнего зарегистрированного пользователя)
+            for (DocumentSnapshot document : queryDocumentSnapshots) {
+                if (!document.contains("user_id")) { // Проверяем, есть ли уже user_id
+                    db.collection("users").document(document.getId()).update("user_id", counter)
+                            .addOnSuccessListener(aVoid -> System.out.println("Updated user: " + document.getId()))
+                            .addOnFailureListener(e -> System.out.println("Error updating user: " + e.getMessage()));
+                    counter++;
+                }
+            }
+        });
     }
 
 

@@ -4,8 +4,15 @@ import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_HEIGHT;
 import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_WIDTH;
 
 import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 
+import androidx.core.content.res.ResourcesCompat;
+
+import com.example.zonesshift.R;
 import com.example.zonesshift.environments.Tile;
+import com.example.zonesshift.main.GamePanel;
+import com.example.zonesshift.ui.TimerLevel;
 
 
 public class Map {
@@ -14,6 +21,12 @@ public class Map {
     private Tile[][] tiles;
     private int tileSize;
     private int tileOffsetX, tileOffsetY;
+
+    // for Timer
+    private TimerLevel timer;
+    private Typeface typeface;
+    private Paint paint;
+    private String timerText;
 
     public Map(Tile[][] tiles){
         this.tiles = tiles;
@@ -35,6 +48,13 @@ public class Map {
                 }
             }
         }
+
+        typeface = ResourcesCompat.getFont(GamePanel.getGameContext(), R.font.minecraft);
+        paint = new Paint();
+        paint.setColor(R.color.text_color);
+        paint.setAlpha(150);
+        paint.setTypeface(typeface);
+        paint.setTextSize((float) GAME_WIDTH / 30);
     }
 
 
@@ -48,6 +68,8 @@ public class Map {
 
 
     public void draw(Canvas c){
+        timerText = timer.tickTimer();
+
         for (int y = 0; y < tiles.length; y++) {
             for (int x = 0; x < tiles[y].length; x++) {
                 if (tiles[y][x] != null) {
@@ -58,6 +80,15 @@ public class Map {
                 }
             }
         }
+        c.drawText(timerText, (float) (GAME_WIDTH / 2) - paint.measureText(timerText) / 2, (float) ((float) tileSize / 1.2), paint);
+
+    }
+
+    private void drawTimer(String time){
+    }
+
+    public void addTimer(TimerLevel timer){
+        this.timer = timer;
     }
 
     public float[] getPlayerCords(){
@@ -85,6 +116,9 @@ public class Map {
     public Tile[][] getTiles() {
         return tiles;
     }
+
+
+    public String getTime(){ return timerText;}
 
     public float getTileOffsetX() {
         return tileOffsetX;

@@ -11,6 +11,7 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.view.MotionEvent;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.example.zonesshift.Game;
@@ -39,7 +40,7 @@ public class GameSettings extends BaseState implements GameStateInterface {
 
         typeface = ResourcesCompat.getFont(GamePanel.getGameContext(), R.font.minecraft);
         paint = new Paint();
-        paint.setColor(R.color.text_color);
+        paint.setColor(ContextCompat.getColor(MainActivity.getGameContext(), R.color.text_color));
         paint.setAlpha(150);
         paint.setTypeface(typeface);
         paint.setTextSize((float) GAME_WIDTH / 30);

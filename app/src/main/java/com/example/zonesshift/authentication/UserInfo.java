@@ -49,5 +49,31 @@ public class UserInfo {
         void onUserNameReceived(String username);
         void onError(String error);
     }
+
+
+    public interface UserIdCallback {
+        void onUserIdReceived(int userId);
+        void onError(String error);
+    }
+
+    public static void getUserId(UserIdCallback callback) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            callback.onError("User not authenticated");
+            return;
+        }
+
+        FirebaseFirestore.getInstance().collection("users").document(user.getUid())
+                .get()
+                .addOnSuccessListener(document -> {
+                    if (document.exists() && document.contains("user_id")) {
+                        int userId = document.getLong("user_id").intValue();
+                        callback.onUserIdReceived(userId);
+                    } else {
+                        callback.onError("User ID not found");
+                    }
+                })
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+    }
 }
 

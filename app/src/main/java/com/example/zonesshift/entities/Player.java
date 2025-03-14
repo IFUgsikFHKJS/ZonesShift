@@ -59,6 +59,7 @@ public class Player extends Character{
 
 
 
+//
 //        Paint hitboxPaint =  new Paint();
 //        hitboxPaint.setColor(Color.RED);
 //        hitboxPaint.setStyle(Paint.Style.STROKE);
@@ -89,20 +90,106 @@ public class Player extends Character{
     }
 
     public void updatePlayerMove(double delta){
-        Tile[][] tiles = Playing.getTiles();
-        loop:
-        for (Tile[] row : tiles) {
-            for (Tile tile : row) {
-                if (tile != null) { tile.checkCollision(getHitbox().left + x ,
-                        getHitbox().top + y,
-                        getHitbox().right + x,
-                        getHitbox().bottom + y);}
-                if (Tile.isInRedZone())
-                    break loop;
-            }
-        }
-        inRedZone = Tile.isInRedZone();
 
+        Tile[][] tiles = Playing.getTiles();
+
+        checkForRedZone(tiles);
+        inRedZone = Tile.isInRedZone();
+        boolean canMove = true;
+
+        checkForGraviZone(tiles);
+        gravitationDirection = Tile.getGravitationDirection();
+
+        canMove = switch (gravitationDirection) {
+            case 0, 1 -> moveGravitationUpOrDown(tiles, delta);
+            case 2 -> moveGravitationRight(tiles, delta);
+            default -> canMove;
+        };
+
+
+
+        if (canMove)
+            if (gravitationDirection == 0 || gravitationDirection == 1)
+                x += xSpeed * -1;
+            else
+                y += ySpeed * -1;
+    }
+
+
+
+    private float calculateSpeed(double delta){
+        float baseSpeed = (float) delta * 300;
+        float speedMultiplayer;
+
+        switch (gravitationDirection){
+            case 0,1:
+                speedMultiplayer = Math.abs(xDiff) / 200 * maxSpeed;
+
+                if(speedMultiplayer < minSpeed)
+                    speedMultiplayer = 0;
+                else if (speedMultiplayer >= maxSpeed)
+                    speedMultiplayer = maxSpeed;
+
+
+
+
+
+                if(xDiff < 0)
+                    speedMultiplayer *= -1;
+
+
+
+                if(Math.abs(xSpeed) < Math.abs(speedMultiplayer * baseSpeed) || speedMultiplayer == 0){
+                    float boost = maxSpeed / 50;
+                    xSpeed +=  (xDiff > 0 ? boost : -boost);
+                } else {
+                    xSpeed = speedMultiplayer * baseSpeed;
+                }
+
+                if (xSpeed > 0)
+                    setFaceDir(0);
+                else if (xSpeed < 0)
+                    setFaceDir(1);
+
+                return xSpeed;
+            case 2:
+                speedMultiplayer = Math.abs(yDiff) / 200 * maxSpeed;
+
+                if(speedMultiplayer < minSpeed)
+                    speedMultiplayer = 0;
+                else if (speedMultiplayer >= maxSpeed)
+                    speedMultiplayer = maxSpeed;
+
+
+
+
+
+                if(yDiff < 0)
+                    speedMultiplayer *= -1;
+
+
+
+                if(Math.abs(ySpeed) < Math.abs(speedMultiplayer * baseSpeed) || speedMultiplayer == 0){
+                    float boost = maxSpeed / 50;
+                    ySpeed +=  (yDiff > 0 ? boost : -boost);
+                } else {
+                    ySpeed = speedMultiplayer * baseSpeed;
+                }
+
+                if (ySpeed > 0)
+                    setFaceDir(0);
+                else if (ySpeed < 0)
+                    setFaceDir(1);
+
+                return ySpeed;
+        }
+
+        return 0;
+
+
+    }
+
+    private boolean moveGravitationUpOrDown(Tile[][] tiles, double delta){
         if(!movePlayer || inRedZone) {
             if (xSpeed != 0)
                 xSpeed -= xSpeed > 0 ? maxSpeed / 50 : -maxSpeed / 50;
@@ -110,13 +197,13 @@ public class Player extends Character{
             for (Tile[] row : tiles) {
                 for (Tile tile : row) {
                     if (checkCollisions(tile))
-                        return;
+                        return false;
                 }
             }
             x += xSpeed * -1;
             if(Math.abs(xSpeed) <= 0.5)
                 xSpeed = 0;
-            return;
+            return false;
         }
 
 
@@ -136,47 +223,60 @@ public class Player extends Character{
                     if (xDiff == 0) {
                         xSpeed = 0;
                     }
-                    return;
+                    return false;
                 }
             }
         }
 
-
-        x += xSpeed * -1;
+        return true;
     }
 
-    private float calculateSpeed(double delta){
-        float baseSpeed = (float) delta * 300;
-        float speedMultiplayer = Math.abs(xDiff) / 200 * maxSpeed;
 
-        if(speedMultiplayer < minSpeed)
-            speedMultiplayer = 0;
-        else if (speedMultiplayer >= maxSpeed)
-            speedMultiplayer = maxSpeed;
-
-
-
-
-
-        if(xDiff < 0)
-            speedMultiplayer *= -1;
-
-
-
-        if(Math.abs(xSpeed) < Math.abs(speedMultiplayer * baseSpeed) || speedMultiplayer == 0){
-            float boost = maxSpeed / 50;
-            xSpeed +=  (xDiff > 0 ? boost : -boost);
-        } else {
-            xSpeed = speedMultiplayer * baseSpeed;
+    private boolean moveGravitationRight(Tile[][] tiles, double delta) {
+        if(!movePlayer || inRedZone) {
+            if (ySpeed != 0)
+                ySpeed -= ySpeed > 0 ? maxSpeed / 50 : -maxSpeed / 50;
+            // Blocking moving and setting speed to 0 if player hits solid block
+            for (Tile[] row : tiles) {
+                for (Tile tile : row) {
+                    if (checkCollisions(tile)) {
+                        System.out.println("Hit a block");
+                        return false;
+                    }
+                }
+            }
+            y += ySpeed * -1;
+            if(Math.abs(ySpeed) <= 0.5)
+                ySpeed = 0;
+//            System.out.println("Player not move");
+            return false;
         }
 
-        if (xSpeed > 0)
-            setFaceDir(0);
-        else if (xSpeed < 0)
-            setFaceDir(1);
 
-        return xSpeed;
+        if (!isJumping)
+                ySpeed = calculateSpeed(delta);
+
+        for (Tile[] row : tiles) {
+            for (Tile tile : row) {
+                if (checkCollisions(tile)) {
+//                    System.out.println(9);
+                    ySpeed = yDiff > 0 ? minSpeed : -minSpeed;
+                    if (yDiff == 0) {
+                        ySpeed = 0;
+                    }
+                    System.out.println("Block");
+                    return false;
+                }
+            }
+        }
+
+        System.out.println(ySpeed);
+
+        return true;
     }
+
+
+
 
     public void updatePlayerJump(double delta){
 
@@ -202,9 +302,32 @@ public class Player extends Character{
         switch (gravitationDirection){
             case 0:
                 jumpGravitationDown(tiles);
+                if (hitboxDirection != 0) {
+                    turnHitbox(0);
+                    for (Tile[] row : tiles) {
+                        for (Tile tile : row) {
+
+                            if (tile != null) {
+                                if (tile.checkCollision(getHitbox().left + x,
+                                        getHitbox().top + y + ySpeed,
+                                        getHitbox().right + x,
+                                        getHitbox().bottom + y + ySpeed)) {
+                                    System.out.println(1);
+                                    y--;
+
+                                }
+                            }
+                        }
+                    }
+                }
                 break;
             case 1:
                 jumpGravitationUp(tiles);
+                break;
+            case 2:
+                if (hitboxDirection != 2)
+                     turnHitbox(2);
+                jumpGravitationRight(tiles);
                 break;
         }
 
@@ -292,12 +415,99 @@ public class Player extends Character{
         }
     }
 
+    private void jumpGravitationRight(Tile[][] tiles){
+        if(isJumping){
+            xSpeed += maxJumpSpeed / 25;
+        }
+
+
+        if (xDiff <= -100 && !isJumping && !inRedZone) {
+            xSpeed = -maxJumpSpeed;
+            isJumping = true;
+        }
+
+
+
+        for (Tile[] row : tiles) {
+            for (Tile tile : row) {
+
+                if (tile != null) {
+                    if (tile.checkCollision(getHitbox().left + x,
+                            getHitbox().top + y + xSpeed,
+                            getHitbox().right + x,
+                            getHitbox().bottom + y + xSpeed)) {
+
+
+                        if (xSpeed >= 0)
+                            isJumping = false;
+                        xSpeed = 0;
+                        return;
+
+                    } else if (xSpeed == 0) {
+
+                        xSpeed += maxJumpSpeed / 25;
+                        isJumping = true;
+                    }
+                }
+            }
+        }
+    }
+
     private boolean checkCollisions(Tile tile){
-        if (tile != null) {return (tile.checkCollision(getHitbox().left + x + xSpeed * -1,
-                getHitbox().top + y,
-                getHitbox().right + x + xSpeed * -1,
-                getHitbox().bottom + y));}
-        return false;
+
+        return switch (gravitationDirection) {
+            case 0, 1 -> {
+                if (tile != null) {
+                    yield (tile.checkCollision(getHitbox().left + x + xSpeed * -1,
+                            getHitbox().top + y,
+                            getHitbox().right + x + xSpeed * -1,
+                            getHitbox().bottom + y));
+                }
+                yield false;
+            }
+            case 2 -> {
+                if (tile != null) {
+                    yield (tile.checkCollision(getHitbox().left + x,
+                            getHitbox().top + y + ySpeed * -1,
+                            getHitbox().right + x,
+                            getHitbox().bottom + y + ySpeed * -1));
+                }
+                yield false;
+            }
+            default -> true;
+        };
+
+
+    }
+
+    private void checkForRedZone(Tile[][] tiles){
+
+        loop:
+        for (Tile[] row : tiles) {
+            for (Tile tile : row) {
+                if (tile != null) { tile.checkCollision(getHitbox().left + x ,
+                        getHitbox().top + y,
+                        getHitbox().right + x,
+                        getHitbox().bottom + y);}
+                if (Tile.isInRedZone())
+                    break loop;
+            }
+        }
+
+    }
+
+    private void checkForGraviZone(Tile[][] tiles){
+        loop:
+        for (Tile[] row : tiles) {
+            for (Tile tile : row) {
+                if (tile != null) { tile.checkCollision(getHitbox().left + x ,
+                        getHitbox().top + y,
+                        getHitbox().right + x,
+                        getHitbox().bottom + y);}
+                if (Tile.getGravitationDirection() != 0)
+                    break loop;
+            }
+        }
     }
 
 

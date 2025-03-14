@@ -11,6 +11,7 @@ import android.view.WindowManager;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.zonesshift.authentication.LoginActivity;
+import com.example.zonesshift.authentication.RegisterActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
 
@@ -46,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        RegisterActivity.updateUserIDs();
 
         setContentView(new GamePanel(this));
 

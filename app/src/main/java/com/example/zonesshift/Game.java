@@ -9,6 +9,7 @@ import android.view.SurfaceHolder;
 import com.example.zonesshift.environments.Tile;
 import com.example.zonesshift.gamestates.Menu;
 import com.example.zonesshift.gamestates.Playing;
+import com.example.zonesshift.gamestates.menustates.LevelScreen;
 import com.example.zonesshift.gamestates.menustates.StartMenu;
 import com.example.zonesshift.main.GameLoop;
 import com.example.zonesshift.main.MainActivity;
@@ -19,6 +20,7 @@ public class Game {
     private Menu menu;
     private Playing playing;
     private GameLoop gameLoop;
+    private LevelScreen levelScreen;
 
 
     private GameState currentGameState = GameState.MENU;
@@ -40,6 +42,7 @@ public class Game {
         switch (currentGameState){
             case MENU -> menu.touchEvents(event);
             case PLAYING -> playing.touchEvents(event);
+            case LEVELSCREEN -> levelScreen.touchEvents(event);
         }
         return true;
     }
@@ -48,6 +51,7 @@ public class Game {
         switch (currentGameState){
             case MENU -> menu.update(delta);
             case PLAYING -> playing.update(delta);
+            case LEVELSCREEN -> levelScreen.update(delta);
         }
 
     }
@@ -60,6 +64,7 @@ public class Game {
             switch (currentGameState) {
                 case MENU -> menu.render(c);
                 case PLAYING -> playing.render(c);
+                case LEVELSCREEN -> levelScreen.render(c);
             }
 
             holder.unlockCanvasAndPost(c);
@@ -67,7 +72,7 @@ public class Game {
     }
 
     public enum GameState{
-        MENU, PLAYING;
+        MENU, PLAYING, LEVELSCREEN;
     }
 
     public GameState getCurrentGameState() {
@@ -77,6 +82,12 @@ public class Game {
     public void setCurrentGameState(GameState gameState){
         this.currentGameState = gameState;
     }
+
+    public void setCurrentGameStateLvlScreen(LevelScreen lvlScreen){
+        this.levelScreen = lvlScreen;
+        this.currentGameState = GameState.LEVELSCREEN;
+    }
+
 
     public Menu getMenu(){
         return menu;

@@ -30,19 +30,25 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    lint {
+        baseline = file("lint-baseline.xml")
+    }
+
 }
 
 dependencies {
+
+    implementation(platform(libs.firebase.bom)) // BOM управляет версиями автоматически
+    implementation(libs.google.firebase.auth)
+    implementation(libs.google.firebase.firestore)
+    implementation(libs.google.firebase.database)
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
-    implementation(libs.firebase.auth)
-    implementation(libs.firebase.database)
-    implementation(libs.firebase.firestore)
-//    implementation(platform(libs.firebase.bom))
-//    implementation(libs.play.services.auth)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

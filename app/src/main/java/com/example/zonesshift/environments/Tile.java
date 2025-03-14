@@ -48,6 +48,10 @@ public class Tile implements BitmapMethods {
                 break;
             case 'G':
                 bitmap = getScaledBitmap(Blocks.GRAVIZONE.getSprite(0));
+                break;
+            case 'g':
+                bitmap = getScaledBitmap(Blocks.GRAVIZONE.getSprite(1));
+                break;
         }
     }
 
@@ -81,13 +85,14 @@ public class Tile implements BitmapMethods {
                     gravitationDirection = 1;
                     break;
                 case 'ℊ':
-                    gravitationDirection = 2;
-                    break;
-                case 'g':
                     gravitationDirection = 3;
                     break;
+                case 'g':
+                    gravitationDirection = 2;
+                    break;
                 case 'W':
-                    playing.nextMap();
+                    playing.win();
+//                    playing.nextMap();
                 case '1':
 //                    System.out.println(playerY + " " + ( y + size + tileOffsetY) + " " + playerHeight + " " + (y + tileOffsetY));
                     return true;

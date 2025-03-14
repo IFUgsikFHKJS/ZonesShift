@@ -87,7 +87,7 @@ public class SinglePlayerLevels extends BaseState implements GameStateInterface 
                 if (lvlButtons[i].isIn(event))
                     if (lvlButtons[i].isPushed()) {
                         game.getPlaying().setCurrentMap(i);
-                        game.setCurrentGameState(Game.GameState.PLAYING);
+                        game.setCurrentGameStateLvlScreen(new LevelScreen(game, i + 1));
                         lvlButtons[i].setPushed(false);
                         break;
                     }

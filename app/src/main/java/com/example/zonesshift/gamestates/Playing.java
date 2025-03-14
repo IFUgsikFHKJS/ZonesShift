@@ -1,27 +1,18 @@
 package com.example.zonesshift.gamestates;
 
-import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_HEIGHT;
 import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_WIDTH;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.BitmapShader;
 import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Shader;
 import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
 
-import com.example.zonesshift.R;
 import com.example.zonesshift.entities.Character;
 import com.example.zonesshift.Game;
-import com.example.zonesshift.environments.Blocks;
 import com.example.zonesshift.environments.Tile;
 import com.example.zonesshift.helpers.interfaces.BitmapMethods;
 import com.example.zonesshift.helpers.interfaces.GameStateInterface;
 import com.example.zonesshift.environments.mapmanagment.MapManager;
-import com.example.zonesshift.main.MainActivity;
 import com.example.zonesshift.ui.ButtonImages;
 import com.example.zonesshift.ui.CustomButton;
 
@@ -50,9 +41,6 @@ public class Playing extends BaseState implements GameStateInterface, BitmapMeth
         return mapManager.getCurrentMap().getTiles();
     }
 
-    public void nextMap(){
-        mapManager.nextMap();
-    }
 
     @Override
     public void update(double delta) {
@@ -99,11 +87,15 @@ public class Playing extends BaseState implements GameStateInterface, BitmapMeth
                     mapManager.restartCurrentMap();
             if (btnLvls.isIn(event))
                 if (btnLvls.isPushed())
-                    game.setCurrentGameState(Game.GameState.MENU);
+                    game.setCurrentGameState(Game.GameState.LEVELSCREEN);
 
             btnRestart.setPushed(false);
             btnLvls.setPushed(false);
         }
+    }
+
+    public void restartCurrentMap(){
+        mapManager.restartCurrentMap();
     }
 
 
@@ -115,4 +107,8 @@ public class Playing extends BaseState implements GameStateInterface, BitmapMeth
                 null );
     }
 
+    public void win() {
+        mapManager.win();
+        game.setCurrentGameState(Game.GameState.LEVELSCREEN);
+    }
 }
