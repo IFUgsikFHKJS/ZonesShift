@@ -23,6 +23,8 @@ import com.example.zonesshift.helpers.interfaces.BitmapMethods;
 import com.example.zonesshift.helpers.interfaces.GameStateInterface;
 import com.example.zonesshift.main.GamePanel;
 import com.example.zonesshift.main.MainActivity;
+import com.example.zonesshift.ui.ButtonImages;
+import com.example.zonesshift.ui.CustomButton;
 
 import java.util.Map;
 
@@ -37,12 +39,26 @@ public class LeaderBoard extends BaseState implements GameStateInterface, Bitmap
     private Typeface typeface;
     private Paint textPaint;
 
+    private CustomButton btnLvls;
+
+
     public LeaderBoard(Game game, Map<String, String> topPlayers) {
         super(game);
+        System.out.println(topPlayers);
         this.topPlayers = topPlayers;
+        System.out.println(this.topPlayers);
         paint = new Paint();
         paint.setColor(Color.BLACK);
         setPaintSettings();
+        btnLvls = new CustomButton(GAME_WIDTH - 20 - ButtonImages.PLAYING_TO_LVL.getWidth(), 20, ButtonImages.PLAYING_TO_LVL.getWidth(), ButtonImages.PLAYING_TO_LVL.getHeight());
+
+
+//        for (int i = 0; i < topPlayers.size(); i++){
+//
+//            String username =  String.valueOf(topPlayers.keySet().toArray()[i]);
+//            String time = topPlayers.get(topPlayers.keySet().toArray()[i]);
+//            System.out.println("Usename " + username + " time " + time);
+//        }
     }
 
     private void setPaintSettings() {
@@ -63,6 +79,14 @@ public class LeaderBoard extends BaseState implements GameStateInterface, Bitmap
     public void render(Canvas c) {
         drawBackground(c);
         drawItems(c);
+        drawButtons(c);
+    }
+
+    private void drawButtons(Canvas c) {
+        c.drawBitmap(
+                ButtonImages.PLAYING_TO_LVL.getBtnImg(btnLvls.isPushed()),
+                btnLvls.getHitbox().left,
+                btnLvls.getHitbox().top, null);
     }
 
     private void drawBackground(Canvas c) {
@@ -87,6 +111,17 @@ public class LeaderBoard extends BaseState implements GameStateInterface, Bitmap
 
     @Override
     public void touchEvents(MotionEvent event) {
+
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (btnLvls.isIn(event))
+                btnLvls.setPushed(true);
+        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+            if (btnLvls.isIn(event))
+                if (btnLvls.isPushed())
+                    game.setCurrentGameState(Game.GameState.LEVELSCREEN);
+
+            btnLvls.setPushed(false);
+        }
 
     }
 }

@@ -216,7 +216,8 @@ public class LevelScreen extends BaseState implements GameStateInterface, Bitmap
                 }
             if (btnLeaderBoard.isIn(event))
                 if (btnLeaderBoard.isPushed()){
-                    game.setCurrentGameStateLeaderBoard(new LeaderBoard(game, topPlayerList));
+                    if(topPlayerList != null)
+                        game.setCurrentGameStateLeaderBoard(new LeaderBoard(game, topPlayerList));
                 }
 
             btnLvls.setPushed(false);

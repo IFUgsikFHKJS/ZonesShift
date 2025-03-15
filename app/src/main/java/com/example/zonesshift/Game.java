@@ -45,6 +45,7 @@ public class Game {
             case MENU -> menu.touchEvents(event);
             case PLAYING -> playing.touchEvents(event);
             case LEVELSCREEN -> levelScreen.touchEvents(event);
+            case LEADERBOARD -> leaderBoard.touchEvents(event);
         }
         return true;
     }
