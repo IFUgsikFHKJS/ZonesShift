@@ -1,5 +1,7 @@
 package com.example.zonesshift.authentication;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.auth.FirebaseAuth;
@@ -8,6 +10,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
@@ -74,6 +77,23 @@ public class UserInfo {
                     }
                 })
                 .addOnFailureListener(e -> callback.onError(e.getMessage()));
+    }
+
+    public static void getUserById(int userId, OnSuccessListener<DocumentSnapshot> onSuccess, OnFailureListener onFailure) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("users")
+                .whereEqualTo("user_id", userId) // Ищем документ, где user_id совпадает
+                .limit(1) // Берем только первый найденный
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        onSuccess.onSuccess(querySnapshot.getDocuments().get(0)); // Возвращаем найденный документ
+                    } else {
+                        onFailure.onFailure(new Exception("User not found"));
+                    }
+                })
+                .addOnFailureListener(onFailure);
     }
 }
 

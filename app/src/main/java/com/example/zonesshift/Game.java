@@ -9,6 +9,7 @@ import android.view.SurfaceHolder;
 import com.example.zonesshift.environments.Tile;
 import com.example.zonesshift.gamestates.Menu;
 import com.example.zonesshift.gamestates.Playing;
+import com.example.zonesshift.gamestates.menustates.LeaderBoard;
 import com.example.zonesshift.gamestates.menustates.LevelScreen;
 import com.example.zonesshift.gamestates.menustates.StartMenu;
 import com.example.zonesshift.main.GameLoop;
@@ -21,6 +22,7 @@ public class Game {
     private Playing playing;
     private GameLoop gameLoop;
     private LevelScreen levelScreen;
+    private LeaderBoard leaderBoard;
 
 
     private GameState currentGameState = GameState.MENU;
@@ -65,6 +67,7 @@ public class Game {
                 case MENU -> menu.render(c);
                 case PLAYING -> playing.render(c);
                 case LEVELSCREEN -> levelScreen.render(c);
+                case LEADERBOARD -> leaderBoard.render(c);
             }
 
             holder.unlockCanvasAndPost(c);
@@ -72,7 +75,7 @@ public class Game {
     }
 
     public enum GameState{
-        MENU, PLAYING, LEVELSCREEN;
+        MENU, PLAYING, LEVELSCREEN, LEADERBOARD;
     }
 
     public GameState getCurrentGameState() {
@@ -86,6 +89,11 @@ public class Game {
     public void setCurrentGameStateLvlScreen(LevelScreen lvlScreen){
         this.levelScreen = lvlScreen;
         this.currentGameState = GameState.LEVELSCREEN;
+    }
+
+    public void setCurrentGameStateLeaderBoard(LeaderBoard leaderBoard){
+        this.leaderBoard = leaderBoard;
+        this.currentGameState = GameState.LEADERBOARD;
     }
 
 

@@ -26,6 +26,7 @@ import com.example.zonesshift.ui.CustomButton;
 import com.example.zonesshift.userresults.AddBestTime;
 import com.example.zonesshift.userresults.GetBestTime;
 //import com.example.zonesshift.userresults.GetTopPlayerOnMap;
+import com.example.zonesshift.userresults.GetTopPlayerOnMap;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -40,6 +41,8 @@ public class LevelScreen extends BaseState implements GameStateInterface, Bitmap
     private String author;
     private String bestTime;
     private Integer userId;
+    private Map<String, String> topPlayerList;
+
 
     // text
     private Typeface typeface;
@@ -48,6 +51,7 @@ public class LevelScreen extends BaseState implements GameStateInterface, Bitmap
     // buttons
     private CustomButton btnPlay;
     private CustomButton btnLvls;
+    private CustomButton btnLeaderBoard;
     private int currentId;
 
     public LevelScreen(Game game, int id) {
@@ -63,7 +67,7 @@ public class LevelScreen extends BaseState implements GameStateInterface, Bitmap
 
 
         getUserInfoAndThen(() -> {
-//            getTopPlayers();
+            getTopPlayers();
             getBestTime();
         });
 //        getTopPlayers();
@@ -85,17 +89,19 @@ public class LevelScreen extends BaseState implements GameStateInterface, Bitmap
 
         System.out.println( "Best time = " + bestTime);
 
+
     }
 
-//    private void getTopPlayers(){
-//        GetTopPlayerOnMap.getTopPlayers(String.valueOf(currentId),
-//                topPlayers -> {
-//                    for (Map.Entry<String, String> entry : topPlayers.entrySet()) {
-//                    }
-//                },
-//                e -> System.out.println("Ошибка: " + e.getMessage())
-//        );
-//    }
+    private void getTopPlayers(){
+        GetTopPlayerOnMap.getTopPlayers(String.valueOf(currentId),
+                topPlayers -> {
+                    topPlayerList = topPlayers;
+
+
+                },
+                e -> System.out.println("Ошибка: " + e.getMessage())
+        );
+    }
 
     private void setPaintSettings() {
         typeface = ResourcesCompat.getFont(GamePanel.getGameContext(), R.font.minecraft);
@@ -140,6 +146,9 @@ public class LevelScreen extends BaseState implements GameStateInterface, Bitmap
                 (float) GAME_HEIGHT / 2 - (float) ButtonImages.PLAY.getHeight() / 2,
                 ButtonImages.PLAY.getWidth(), ButtonImages.PLAY.getHeight());
         btnLvls = new CustomButton(GAME_WIDTH / 26, GAME_WIDTH / 26, ButtonImages.PLAYING_TO_LVL.getWidth(), ButtonImages.PLAYING_TO_LVL.getHeight());
+        btnLeaderBoard = new CustomButton( GAME_WIDTH - ButtonImages.LEADERBOARD.getWidth() - GAME_WIDTH / 26,
+                 GAME_WIDTH / 26
+                , ButtonImages.LEADERBOARD.getWidth(), ButtonImages.LEADERBOARD.getHeight());
     }
 
     @Override
@@ -178,6 +187,10 @@ public class LevelScreen extends BaseState implements GameStateInterface, Bitmap
                 ButtonImages.PLAYING_TO_LVL.getBtnImg(btnLvls.isPushed()),
                 btnLvls.getHitbox().left,
                 btnLvls.getHitbox().top, null);
+        c.drawBitmap(
+                ButtonImages.LEADERBOARD.getBtnImg(btnLeaderBoard.isPushed()),
+                btnLeaderBoard.getHitbox().left,
+                btnLeaderBoard.getHitbox().top, null);
     }
 
     @Override
@@ -189,6 +202,8 @@ public class LevelScreen extends BaseState implements GameStateInterface, Bitmap
                 btnLvls.setPushed(true);
             else if (btnPlay.isIn(event))
                 btnPlay.setPushed(true);
+            else if (btnLeaderBoard.isIn(event))
+                btnLeaderBoard.setPushed(true);
 
         } else if (event.getAction() == MotionEvent.ACTION_UP) {
             if (btnLvls.isIn(event))
@@ -199,9 +214,14 @@ public class LevelScreen extends BaseState implements GameStateInterface, Bitmap
                     game.getPlaying().restartCurrentMap();
                     game.setCurrentGameState(Game.GameState.PLAYING);
                 }
+            if (btnLeaderBoard.isIn(event))
+                if (btnLeaderBoard.isPushed()){
+                    game.setCurrentGameStateLeaderBoard(new LeaderBoard(game, topPlayerList));
+                }
 
             btnLvls.setPushed(false);
             btnPlay.setPushed(false);
+            btnLeaderBoard.setPushed(false);
         }
 
     }
