@@ -46,6 +46,7 @@ public class Playing extends BaseState implements GameStateInterface, BitmapMeth
     public void update(double delta) {
         mapManager.getPlayer().updatePlayerMove(delta);
         mapManager.getPlayer().updatePlayerJump(delta);
+        mapManager.updateMap(delta);
     }
 
     @Override

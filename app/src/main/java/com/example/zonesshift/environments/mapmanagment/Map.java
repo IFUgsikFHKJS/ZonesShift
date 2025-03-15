@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.example.zonesshift.R;
@@ -51,8 +52,8 @@ public class Map {
 
         typeface = ResourcesCompat.getFont(GamePanel.getGameContext(), R.font.minecraft);
         paint = new Paint();
-        paint.setColor(R.color.text_color);
-        paint.setAlpha(150);
+        paint.setColor(ContextCompat.getColor(GamePanel.getGameContext(), R.color.time_text_color));
+//        paint.setAlpha(150);
         paint.setTypeface(typeface);
         paint.setTextSize((float) GAME_WIDTH / 30);
     }
@@ -68,7 +69,7 @@ public class Map {
 
 
     public void draw(Canvas c){
-        timerText = timer.tickTimer();
+//        timerText = timer.tickTimer();
 
         for (int y = 0; y < tiles.length; y++) {
             for (int x = 0; x < tiles[y].length; x++) {
@@ -80,7 +81,7 @@ public class Map {
                 }
             }
         }
-        c.drawText(timerText, (float) (GAME_WIDTH / 2) - paint.measureText(timerText) / 2, (float) ((float) tileSize / 1.2), paint);
+        c.drawText(timerText, (float) (GAME_WIDTH / 2) - paint.measureText(timerText) / 2,GAME_HEIGHT / 10, paint);
 
     }
 
@@ -129,4 +130,7 @@ public class Map {
     }
 
 
+    public void update(double delta) {
+        timerText = timer.tickTimer(delta);
+    }
 }

@@ -135,4 +135,8 @@ public class MapManager {
     public static void setUserId(int userId) {
         MapManager.userId = userId;
     }
+
+    public void updateMap(double delta) {
+        currentMap.update(delta);
+    }
 }

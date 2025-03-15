@@ -4,4 +4,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="background">#FF212121</color>
     <color name="text_color">#3b3c49</color>
+    <color name="time_text_color">#4e7a58</color>
 </resources>
