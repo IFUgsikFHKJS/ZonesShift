@@ -81,7 +81,8 @@ public class Map {
                 }
             }
         }
-        c.drawText(timerText, (float) (GAME_WIDTH / 2) - paint.measureText(timerText) / 2,GAME_HEIGHT / 10, paint);
+        if (timerText != null)
+            c.drawText(timerText, (float) (GAME_WIDTH / 2) - paint.measureText(timerText) / 2, (float) GAME_HEIGHT / 10, paint);
 
     }
 

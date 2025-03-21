@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         if (currentUser != null) {
             // Force Firebase to refresh user data
             currentUser.reload().addOnCompleteListener(task -> {
-                if (!task.isSuccessful() || mAuth.getCurrentUser() == null) {
+                if (!task.isSuccessful() || mAuth.getCurrentUser() == null || !currentUser.isEmailVerified()) {
                     // User doesn't exist anymore or reload failed
                     redirectToLogin();
                 }

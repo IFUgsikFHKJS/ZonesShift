@@ -47,6 +47,7 @@ public class LevelScreen extends BaseState implements GameStateInterface, Bitmap
     // text
     private Typeface typeface;
     private Paint paint;
+    private Paint leaderBoardPaint;
 
     // buttons
     private CustomButton btnPlay;
@@ -96,6 +97,7 @@ public class LevelScreen extends BaseState implements GameStateInterface, Bitmap
         GetTopPlayerOnMap.getTopPlayers(String.valueOf(currentId),
                 topPlayers -> {
                     topPlayerList = topPlayers;
+                    leaderBoardPaint.setAlpha(256);
 
 
                 },
@@ -105,11 +107,15 @@ public class LevelScreen extends BaseState implements GameStateInterface, Bitmap
 
     private void setPaintSettings() {
         typeface = ResourcesCompat.getFont(GamePanel.getGameContext(), R.font.minecraft);
+
         paint = new Paint();
         paint.setColor(ContextCompat.getColor(MainActivity.getGameContext(), R.color.text_color));
         paint.setAlpha(150);
         paint.setTypeface(typeface);
         paint.setTextSize((float) GAME_WIDTH / 30);
+
+        leaderBoardPaint = new Paint();
+        leaderBoardPaint.setAlpha(200);
     }
 
     private void getUserInfoAndThen(Runnable callback) {
@@ -190,7 +196,7 @@ public class LevelScreen extends BaseState implements GameStateInterface, Bitmap
         c.drawBitmap(
                 ButtonImages.LEADERBOARD.getBtnImg(btnLeaderBoard.isPushed()),
                 btnLeaderBoard.getHitbox().left,
-                btnLeaderBoard.getHitbox().top, null);
+                btnLeaderBoard.getHitbox().top, leaderBoardPaint);
     }
 
     @Override

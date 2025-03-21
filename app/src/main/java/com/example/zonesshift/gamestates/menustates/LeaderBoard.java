@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.text.TextPaint;
@@ -25,6 +26,7 @@ import com.example.zonesshift.main.GamePanel;
 import com.example.zonesshift.main.MainActivity;
 import com.example.zonesshift.ui.ButtonImages;
 import com.example.zonesshift.ui.CustomButton;
+import com.example.zonesshift.userresults.GetTopPlayerOnMap;
 
 import java.util.Map;
 
@@ -45,7 +47,7 @@ public class LeaderBoard extends BaseState implements GameStateInterface, Bitmap
     public LeaderBoard(Game game, Map<String, String> topPlayers) {
         super(game);
         System.out.println(topPlayers);
-        this.topPlayers = topPlayers;
+        this.topPlayers = GetTopPlayerOnMap.sortPlayersByTime(topPlayers);
         System.out.println(this.topPlayers);
         paint = new Paint();
         paint.setColor(Color.BLACK);
@@ -99,13 +101,16 @@ public class LeaderBoard extends BaseState implements GameStateInterface, Bitmap
 
     private void drawItems(Canvas c) {
         for (int i = 0; i < topPlayers.size(); i++){
-            RectF item = new RectF(itemWidth / 3 + (i > 4 ? itemWidth : 0),
+            RectF item = new RectF((float) (itemWidth / 3 + (i > 4 ? itemWidth * 1.2 : 0)),
                     itemHeight + itemHeight * (i % 5),
-                    itemWidth / 3 + (i > 4 ? itemWidth : 0 + itemWidth),
+                    itemWidth / 3 + (i > 4 ? itemWidth : 0) + itemWidth,
                     2 * itemHeight + itemHeight * (i % 5));
-            c.drawText(String.valueOf(topPlayers.keySet().toArray()[i]), item.left + 20, item.top + 20, textPaint);
+
+
+
+            c.drawText(String.valueOf(topPlayers.keySet().toArray()[i]), item.left + 20,  item.top + itemHeight / 2, textPaint);
             String time = topPlayers.get(topPlayers.keySet().toArray()[i]);
-            c.drawText(time, item.right - paint.measureText(time) - 20  ,item.top + 20, textPaint);
+            c.drawText(time, item.right - paint.measureText(time) - 20  ,item.top + itemHeight / 2, textPaint);
         }
     }
 
