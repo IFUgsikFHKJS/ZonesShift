@@ -35,4 +35,31 @@ public class MapLoader {
         return tiles;
     }
 
+    public static Tile[][] loadMapFromString(String mapData) {
+        String[] lines = mapData.split("\n");
+        int rows = lines.length;
+        int cols = 0;
+
+        // Находим максимальную длину строки (на случай, если строки не одинаковой длины)
+        for (String line : lines) {
+            if (line.length() > cols) {
+                cols = line.length();
+            }
+        }
+
+        Tile[][] tiles = new Tile[rows][cols];
+
+        for (int row = 0; row < rows; row++) {
+            String line = lines[row];
+            for (int col = 0; col < line.length(); col++) {
+                char c = line.charAt(col);
+                if (c != '.') {
+                    tiles[row][col] = new Tile(col, row, 32, c);
+                }
+            }
+        }
+
+        return tiles;
+    }
+
 }

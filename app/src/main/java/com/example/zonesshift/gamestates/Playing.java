@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import com.example.zonesshift.entities.Character;
 import com.example.zonesshift.Game;
 import com.example.zonesshift.environments.Tile;
+import com.example.zonesshift.environments.mapmanagment.Map;
 import com.example.zonesshift.helpers.interfaces.BitmapMethods;
 import com.example.zonesshift.helpers.interfaces.GameStateInterface;
 import com.example.zonesshift.environments.mapmanagment.MapManager;
@@ -32,6 +33,11 @@ public class Playing extends BaseState implements GameStateInterface, BitmapMeth
     public void setCurrentMap(int mapID){
         mapManager.setCurrentMap(mapID);
     }
+
+    public void setCurrentOnlineMap(Map map, int id){
+        mapManager.setCurrentOnlineMap(map, id);
+    }
+
 
     public static int getTileSize() {
         return mapManager.getCurrentMap().getTileSize();

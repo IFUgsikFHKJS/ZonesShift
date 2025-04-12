@@ -25,6 +25,7 @@ public class MapManager {
     private int currentMapId;
     private static ArrayList<Map> maps = new ArrayList<Map>();
     private static Map currentMap;
+    private static boolean isOnline = false;
     private static Player player;
     private static int userId;
 //    MapLoader.loadMap(MainActivity.getGameContext(), "maps/map1.txt", 9, 19)
@@ -84,6 +85,7 @@ public class MapManager {
     }
 
     public void setCurrentMap(int currentMapId) {
+        isOnline = false;
         this.currentMapId = currentMapId;
         currentMap = maps.get(currentMapId);
         float[] cords = currentMap.getPlayerCords();
@@ -94,6 +96,19 @@ public class MapManager {
         currentMap.addTimer(timer);
         currentMap.updateBitmap();
 //        Playing.setPlayerCords(maps.get(currentMap).getPlayerCords(maps.get(currentMap).getTiles()));
+    }
+
+    public void setCurrentOnlineMap(Map map, int id){
+        isOnline = true;
+        currentMap = map;
+        currentMapId = id;
+        float[] cords = currentMap.getPlayerCords();
+        player = new Player(new PointF( cords[0], cords[1]));
+        GameCharacters.PLAYER.setPlayerBitmap(currentMap.getTileSize());
+        TimerLevel timer = new TimerLevel();
+        timer.startTimer();
+        currentMap.addTimer(timer);
+        currentMap.updateBitmap();
     }
 
 
@@ -121,7 +136,11 @@ public class MapManager {
                 public void onUserIdReceived(int userId) {
                     System.out.println(userId);
                     System.out.println(time);
-                    AddBestTime.saveBestTime(userId, getCurrentMapId() + 1, time);
+                    if (!isOnline)
+                        AddBestTime.saveBestTime(userId, getCurrentMapId() + 1, time);
+                    else
+                        AddBestTime.saveBestTime(userId, getCurrentMapId(), time);
+
 
                 }
 

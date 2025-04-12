@@ -19,20 +19,20 @@ public class AddMap {
 
         String mapTiles = mapToString(tiles);
 
-        // Запрашиваем карты, сортируем по map_id в убывающем порядке и ограничиваем 1 результатом
+
         db.collection("maps")
                 .orderBy("map_id", Query.Direction.DESCENDING)
                 .limit(1)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    int mapId = 1; // По умолчанию, если карт нет, начинаем с 1
+                    int mapId = 1;
 
                     if (!queryDocumentSnapshots.isEmpty()) {
                         DocumentSnapshot lastMap = queryDocumentSnapshots.getDocuments().get(0);
-                        mapId = lastMap.getLong("map_id").intValue() + 1; // Увеличиваем последний map_id
+                        mapId = lastMap.getLong("map_id").intValue() + 1;
                     }
 
-                    // Создаем данные карты
+
                     Map<String, Object> mapData = new HashMap<>();
                     mapData.put("map_id", mapId);
                     mapData.put("name", lvlName);
@@ -45,7 +45,7 @@ public class AddMap {
                     mapData.put("likes", 0);
                     mapData.put("dislikes", 0);
 
-                    // Добавляем карту в Firestore
+
                     db.collection("maps").add(mapData)
                             .addOnSuccessListener(documentReference -> Log.d("Firestore", "Map added!"))
                             .addOnFailureListener(e -> Log.w("Firestore", "Error adding map", e));
@@ -60,11 +60,11 @@ public class AddMap {
                 if (tile == null)
                     sb.append('.');
                 else
-                    sb.append(tile.getType()); // Получаем символ типа Tile
+                    sb.append(tile.getType());
             }
-            sb.append("\n"); // Разделяем строки карты
+            sb.append("\n");
         }
-        return sb.toString().trim(); // Убираем последний перевод строки
+        return sb.toString().trim();
     }
 
 }

@@ -7,6 +7,11 @@ import android.graphics.Canvas;
 import android.view.MotionEvent;
 
 import com.example.zonesshift.Game;
+import com.example.zonesshift.environments.Tile;
+import com.example.zonesshift.environments.mapmanagment.Map;
+import com.example.zonesshift.environments.mapmanagment.MapLoader;
+import com.example.zonesshift.environments.mapmanagment.mapcreating.AddMap;
+import com.example.zonesshift.environments.mapmanagment.mapcreating.LoadMap;
 import com.example.zonesshift.gamestates.BaseState;
 import com.example.zonesshift.gamestates.Menu;
 import com.example.zonesshift.helpers.interfaces.GameStateInterface;
@@ -17,6 +22,7 @@ public class StartMenu extends BaseState implements GameStateInterface {
 
     private CustomButton btnSinglePlayer;
     private CustomButton btnSettings;
+    private CustomButton btnTestLevel;
 
     public StartMenu(Game game) {
         super(game);
@@ -29,6 +35,11 @@ public class StartMenu extends BaseState implements GameStateInterface {
                 ButtonImages.MENU_SINGLEPLAYER.getWidth(), ButtonImages.MENU_SINGLEPLAYER.getHeight());
         btnSettings = new CustomButton((float) (GAME_WIDTH - ButtonImages.MENU_SETTINGS.getWidth() * 1.5),
                 (float) (ButtonImages.MENU_SETTINGS.getWidth() * .5),
+                ButtonImages.MENU_SETTINGS.getWidth(), ButtonImages.MENU_SETTINGS.getHeight());
+
+
+        btnTestLevel = new CustomButton((float) (GAME_WIDTH - ButtonImages.MENU_SETTINGS.getWidth() * 1.5),
+                (float) (GAME_HEIGHT - ButtonImages.MENU_SETTINGS.getHeight() - 40),
                 ButtonImages.MENU_SETTINGS.getWidth(), ButtonImages.MENU_SETTINGS.getHeight());
     }
 
@@ -52,6 +63,11 @@ public class StartMenu extends BaseState implements GameStateInterface {
                 ButtonImages.MENU_SETTINGS.getBtnImg(btnSettings.isPushed()),
                 btnSettings.getHitbox().left,
                 btnSettings.getHitbox().top, null);
+
+        c.drawBitmap(
+                ButtonImages.MENU_SETTINGS.getBtnImg(btnTestLevel.isPushed()),
+                btnTestLevel.getHitbox().left,
+                btnTestLevel.getHitbox().top, null);
     }
 
     @Override
@@ -64,6 +80,9 @@ public class StartMenu extends BaseState implements GameStateInterface {
             else if(btnSettings.isIn(event))
                 btnSettings.setPushed(true);
 
+            else if(btnTestLevel.isIn(event))
+                btnTestLevel.setPushed(true);
+
         } else if (event.getAction() == MotionEvent.ACTION_UP) {
 
             if (btnSinglePlayer.isIn(event)) {
@@ -72,9 +91,28 @@ public class StartMenu extends BaseState implements GameStateInterface {
             } else if (btnSettings.isIn(event)){
                 if (btnSettings.isPushed())
                     game.getMenu().setCurrentMenuState(Menu.MenuState.GAME_SETTINGS);}
+            else if (btnTestLevel.isIn(event)){
+                if (btnTestLevel.isPushed())
+                    loadMapFromDB();}
 
             btnSinglePlayer.setPushed(false);
             btnSettings.setPushed(false);
+            btnTestLevel.setPushed(false);
         }
+    }
+
+
+    private void loadMapFromDB(){
+        LoadMap.getMapById(8,
+                mapData -> {
+                    String mapString = (String) mapData.get("map_data");
+                    System.out.println("Загружена карта: " + mapString);
+                    Tile[][] tiles = MapLoader.loadMapFromString(mapString);
+
+
+                    game.getPlaying().setCurrentOnlineMap(new Map(tiles), 8);
+                    game.setCurrentGameStateLvlScreen(new LevelScreen(game, 8));
+                },
+                e -> System.out.println("Ошибка загрузки карты: " + e.getMessage()));
     }
 }
