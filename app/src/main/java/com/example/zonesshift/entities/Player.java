@@ -6,6 +6,7 @@ import com.example.zonesshift.gamestates.Playing;
 import com.example.zonesshift.ui.ButtonImages;
 import com.example.zonesshift.ui.CustomButton;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -508,6 +509,11 @@ public class Player extends Character{
                     break loop;
             }
         }
+    }
+
+    public Bitmap getPlayerBitmap(){
+        return getGameCharType().getSprite(getAniIndex(),
+                getFaceDir());
     }
 
 

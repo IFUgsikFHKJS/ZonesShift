@@ -3,6 +3,7 @@ package com.example.zonesshift.gamestates.menustates;
 import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_HEIGHT;
 import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_WIDTH;
 
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 
@@ -14,7 +15,9 @@ import com.example.zonesshift.environments.mapmanagment.mapcreating.AddMap;
 import com.example.zonesshift.environments.mapmanagment.mapcreating.LoadMap;
 import com.example.zonesshift.gamestates.BaseState;
 import com.example.zonesshift.gamestates.Menu;
+import com.example.zonesshift.gamestates.multiplayer.onlinelvls.mapeditor.MapEditorActivity;
 import com.example.zonesshift.helpers.interfaces.GameStateInterface;
+import com.example.zonesshift.main.GamePanel;
 import com.example.zonesshift.ui.ButtonImages;
 import com.example.zonesshift.ui.CustomButton;
 
@@ -93,7 +96,7 @@ public class StartMenu extends BaseState implements GameStateInterface {
                     game.getMenu().setCurrentMenuState(Menu.MenuState.GAME_SETTINGS);}
             else if (btnTestLevel.isIn(event)){
                 if (btnTestLevel.isPushed())
-                    loadMapFromDB();}
+                    startMapEditor();}
 
             btnSinglePlayer.setPushed(false);
             btnSettings.setPushed(false);
@@ -114,5 +117,10 @@ public class StartMenu extends BaseState implements GameStateInterface {
                     game.setCurrentGameStateLvlScreen(new LevelScreen(game, 8));
                 },
                 e -> System.out.println("Ошибка загрузки карты: " + e.getMessage()));
+    }
+
+    private void startMapEditor(){
+        Intent i = new Intent(GamePanel.getGameContext(), MapEditorActivity.class);
+        GamePanel.getGameContext().startActivity(i);
     }
 }
