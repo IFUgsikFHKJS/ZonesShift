@@ -131,24 +131,27 @@ public class MapManager {
 
     public void win() {
             String time = getCurrentMap().getTime();
-            UserInfo.getUserId(new UserInfo.UserIdCallback() {
-                @Override
-                public void onUserIdReceived(int userId) {
-                    System.out.println(userId);
-                    System.out.println(time);
-                    if (!isOnline)
-                        AddBestTime.saveBestTime(userId, getCurrentMapId() + 1, time);
-                    else
-                        AddBestTime.saveBestTime(userId, getCurrentMapId(), time);
+
+            if (currentMapId == -1){
+
+            } else {
+                UserInfo.getUserId(new UserInfo.UserIdCallback() {
+                    @Override
+                    public void onUserIdReceived(int userId) {
+                        if (!isOnline)
+                            AddBestTime.saveBestTime(userId, getCurrentMapId() + 1, time);
+                        else
+                            AddBestTime.saveBestTime(userId, getCurrentMapId(), time);
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        System.out.println("Error: " + error);
+                    }
+                });
+            }
 
 
-                }
-
-                @Override
-                public void onError(String error) {
-                    System.out.println("Error: " + error);
-                }
-            });
     }
 
     public static void setUserId(int userId) {

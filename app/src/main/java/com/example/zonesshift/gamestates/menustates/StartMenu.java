@@ -11,11 +11,10 @@ import com.example.zonesshift.Game;
 import com.example.zonesshift.environments.Tile;
 import com.example.zonesshift.environments.mapmanagment.Map;
 import com.example.zonesshift.environments.mapmanagment.MapLoader;
-import com.example.zonesshift.environments.mapmanagment.mapcreating.AddMap;
 import com.example.zonesshift.environments.mapmanagment.mapcreating.LoadMap;
 import com.example.zonesshift.gamestates.BaseState;
 import com.example.zonesshift.gamestates.Menu;
-import com.example.zonesshift.gamestates.multiplayer.onlinelvls.mapeditor.MapEditorActivity;
+import com.example.zonesshift.gamestates.createlvl.mapeditor.MapEditorActivity;
 import com.example.zonesshift.helpers.interfaces.GameStateInterface;
 import com.example.zonesshift.main.GamePanel;
 import com.example.zonesshift.ui.ButtonImages;
@@ -25,7 +24,7 @@ public class StartMenu extends BaseState implements GameStateInterface {
 
     private CustomButton btnSinglePlayer;
     private CustomButton btnSettings;
-    private CustomButton btnTestLevel;
+    private CustomButton btnCreateLvl;
 
     public StartMenu(Game game) {
         super(game);
@@ -33,17 +32,20 @@ public class StartMenu extends BaseState implements GameStateInterface {
     }
 
     private void initButtons(){
-        btnSinglePlayer = new CustomButton((float) GAME_WIDTH / 2 - (float) ButtonImages.MENU_SINGLEPLAYER.getWidth() / 2,
-                (float) GAME_HEIGHT / 2 - (float) ButtonImages.MENU_SINGLEPLAYER.getHeight() / 2,
+        float btnX = (float) GAME_WIDTH / 2 - (float) ButtonImages.MENU_SINGLEPLAYER.getWidth() / 2;
+        float btnUnit = ButtonImages.MENU_CREATELVL.getHeight();
+        btnSinglePlayer = new CustomButton(btnX, (float) (btnUnit * 1.5),
                 ButtonImages.MENU_SINGLEPLAYER.getWidth(), ButtonImages.MENU_SINGLEPLAYER.getHeight());
+
+        btnCreateLvl = new CustomButton(btnX, btnUnit * 3,
+                ButtonImages.MENU_CREATELVL.getWidth(), ButtonImages.MENU_CREATELVL.getHeight());
+
         btnSettings = new CustomButton((float) (GAME_WIDTH - ButtonImages.MENU_SETTINGS.getWidth() * 1.5),
                 (float) (ButtonImages.MENU_SETTINGS.getWidth() * .5),
                 ButtonImages.MENU_SETTINGS.getWidth(), ButtonImages.MENU_SETTINGS.getHeight());
 
 
-        btnTestLevel = new CustomButton((float) (GAME_WIDTH - ButtonImages.MENU_SETTINGS.getWidth() * 1.5),
-                (float) (GAME_HEIGHT - ButtonImages.MENU_SETTINGS.getHeight() - 40),
-                ButtonImages.MENU_SETTINGS.getWidth(), ButtonImages.MENU_SETTINGS.getHeight());
+
     }
 
     @Override
@@ -63,14 +65,16 @@ public class StartMenu extends BaseState implements GameStateInterface {
                 btnSinglePlayer.getHitbox().top, null);
 
         c.drawBitmap(
+                ButtonImages.MENU_CREATELVL.getBtnImg(btnCreateLvl.isPushed()),
+                btnCreateLvl.getHitbox().left,
+                btnCreateLvl.getHitbox().top, null);
+
+        c.drawBitmap(
                 ButtonImages.MENU_SETTINGS.getBtnImg(btnSettings.isPushed()),
                 btnSettings.getHitbox().left,
                 btnSettings.getHitbox().top, null);
 
-        c.drawBitmap(
-                ButtonImages.MENU_SETTINGS.getBtnImg(btnTestLevel.isPushed()),
-                btnTestLevel.getHitbox().left,
-                btnTestLevel.getHitbox().top, null);
+
     }
 
     @Override
@@ -80,27 +84,33 @@ public class StartMenu extends BaseState implements GameStateInterface {
             if (btnSinglePlayer.isIn(event))
                 btnSinglePlayer.setPushed(true);
 
+            else if (btnCreateLvl.isIn(event))
+                btnCreateLvl.setPushed(true);
+
             else if(btnSettings.isIn(event))
                 btnSettings.setPushed(true);
 
-            else if(btnTestLevel.isIn(event))
-                btnTestLevel.setPushed(true);
 
         } else if (event.getAction() == MotionEvent.ACTION_UP) {
 
             if (btnSinglePlayer.isIn(event)) {
                 if (btnSinglePlayer.isPushed())
                     game.getMenu().setCurrentMenuState(Menu.MenuState.SINGLEPLAYER_LVL);
-            } else if (btnSettings.isIn(event)){
+            }
+
+            else if (btnCreateLvl.isIn(event)){
+                if (btnCreateLvl.isPushed())
+                    game.getMenu().setCurrentMenuState(Menu.MenuState.CREATEDLVLSLIST);}
+
+            else if (btnSettings.isIn(event)){
                 if (btnSettings.isPushed())
                     game.getMenu().setCurrentMenuState(Menu.MenuState.GAME_SETTINGS);}
-            else if (btnTestLevel.isIn(event)){
-                if (btnTestLevel.isPushed())
-                    startMapEditor();}
+
+
 
             btnSinglePlayer.setPushed(false);
+            btnCreateLvl.setPushed(false);
             btnSettings.setPushed(false);
-            btnTestLevel.setPushed(false);
         }
     }
 
@@ -119,8 +129,5 @@ public class StartMenu extends BaseState implements GameStateInterface {
                 e -> System.out.println("Ошибка загрузки карты: " + e.getMessage()));
     }
 
-    private void startMapEditor(){
-        Intent i = new Intent(GamePanel.getGameContext(), MapEditorActivity.class);
-        GamePanel.getGameContext().startActivity(i);
-    }
+
 }

@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 
 import com.example.zonesshift.Game;
 import com.example.zonesshift.R;
+import com.example.zonesshift.gamestates.createlvl.CreatedLvlsList;
 import com.example.zonesshift.gamestates.menustates.GameSettings;
 import com.example.zonesshift.gamestates.menustates.SinglePlayerLevels;
 import com.example.zonesshift.gamestates.menustates.StartMenu;
@@ -24,6 +25,8 @@ public class Menu extends BaseState implements GameStateInterface, BitmapMethods
     private StartMenu startMenu;
     private SinglePlayerLevels singlePlayerLevels;
     private GameSettings gameSettings;
+    private CreatedLvlsList createdLvlsList;
+
     private MenuState currentMenuState = MenuState.START_MENU;
 
     public Menu(Game game) {
@@ -31,6 +34,7 @@ public class Menu extends BaseState implements GameStateInterface, BitmapMethods
         startMenu = new StartMenu(game);
         singlePlayerLevels = new SinglePlayerLevels(game);
         gameSettings = new GameSettings(game);
+        createdLvlsList = new CreatedLvlsList(game);
     }
 
     @Override
@@ -39,6 +43,7 @@ public class Menu extends BaseState implements GameStateInterface, BitmapMethods
             case START_MENU -> startMenu.update(delta);
             case SINGLEPLAYER_LVL -> singlePlayerLevels.update(delta);
             case GAME_SETTINGS -> gameSettings.update(delta);
+            case CREATEDLVLSLIST -> createdLvlsList.update(delta);
         }
     }
 
@@ -49,6 +54,7 @@ public class Menu extends BaseState implements GameStateInterface, BitmapMethods
             case START_MENU -> startMenu.render(c);
             case SINGLEPLAYER_LVL -> singlePlayerLevels.render(c);
             case GAME_SETTINGS -> gameSettings.render(c);
+            case CREATEDLVLSLIST -> createdLvlsList.render(c);
         }
     }
 
@@ -70,11 +76,12 @@ public class Menu extends BaseState implements GameStateInterface, BitmapMethods
             case START_MENU -> startMenu.touchEvents(event);
             case SINGLEPLAYER_LVL -> singlePlayerLevels.touchEvents(event);
             case GAME_SETTINGS -> gameSettings.touchEvents(event);
+            case CREATEDLVLSLIST -> createdLvlsList.touchEvents(event);
         }
     }
 
     public enum MenuState{
-        START_MENU, SINGLEPLAYER_LVL, GAME_SETTINGS;
+        START_MENU, SINGLEPLAYER_LVL, GAME_SETTINGS, CREATEDLVLSLIST;
     }
 
 }

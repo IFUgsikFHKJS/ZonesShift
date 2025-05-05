@@ -1,13 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mapEditorRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <!-- Ваш MapEditorView -->
-    <com.example.zonesshift.gamestates.multiplayer.onlinelvls.mapeditor.MapEditorView
-        android:id="@+id/mapEditorView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+<!--    <com.example.zonesshift.gamestates.createlvl.mapeditor.MapEditorView-->
+<!--        android:id="@+id/mapEditorView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent" />-->
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="start"
+        android:background="@drawable/mapeditor_button_background"
+        android:src="@drawable/icon_home"
+        android:scaleType="centerInside"
+        android:rotation="180"
+        android:contentDescription="@string/descr"
+        android:layout_margin="10dp"
+        android:padding="63dp"/>
+
+    <ImageButton
+        android:id="@+id/btnTest"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="end"
+        android:background="@drawable/mapeditor_button_background"
+        android:src="@drawable/icon_play"
+        android:scaleType="centerInside"
+        android:rotation="180"
+        android:contentDescription="@string/descr"
+        android:layout_margin="10dp"
+        android:padding="70dp"/>
+
 
     <!-- Панель с кнопками поверх MapEditorView -->
     <LinearLayout
@@ -15,51 +44,81 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
+        android:gravity="center"
         android:orientation="horizontal"
         android:padding="16dp">
 
         <!-- Кнопки для выбора типов блоков -->
-        <Button
+        <ImageButton
             android:id="@+id/btnSolid"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/mapeditor_button_background"
+            android:src="@drawable/icon_solid"
+            android:scaleType="centerInside"
+            android:rotation="180"
+            android:contentDescription="@string/descr"
             android:layout_marginEnd="10dp"
-            android:text="Block" />
+            android:padding="57dp"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/btnRedZone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/mapeditor_button_background"
+            android:src="@drawable/icon_redzone"
+            android:scaleType="centerInside"
+            android:rotation="180"
+            android:contentDescription="@string/descr"
             android:layout_marginEnd="10dp"
-            android:text="Redzone" />
+            android:padding="57dp"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/btnGravizone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/mapeditor_button_background"
+            android:src="@drawable/icon_gravizone"
+            android:scaleType="centerInside"
+            android:contentDescription="@string/descr"
             android:layout_marginEnd="10dp"
-            android:text="Gravizone" />
+            android:padding="57dp"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/btnRemove"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/mapeditor_button_background"
+            android:src="@drawable/icon_remove"
+            android:scaleType="centerInside"
+            android:rotation="180"
+            android:contentDescription="@string/descr"
             android:layout_marginEnd="10dp"
-            android:text="Remove" />
+            android:padding="57dp"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/btnPlayer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/mapeditor_button_background"
+            android:src="@drawable/icon_player"
+            android:scaleType="centerInside"
+            android:rotation="180"
+            android:contentDescription="@string/descr"
             android:layout_marginEnd="10dp"
-            android:text="Player" />
+            android:padding="60dp"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/btnWin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/mapeditor_button_background"
+            android:src="@drawable/icon_win"
+            android:scaleType="centerInside"
+            android:rotation="180"
+            android:contentDescription="@string/descr"
             android:layout_marginEnd="10dp"
-            android:text="Win" />
+            android:padding="57dp"/>
 
     </LinearLayout>
 

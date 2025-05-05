@@ -1,17 +1,15 @@
 package com.example.zonesshift;
 
-import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
 import com.example.zonesshift.environments.Tile;
 import com.example.zonesshift.gamestates.Menu;
 import com.example.zonesshift.gamestates.Playing;
+import com.example.zonesshift.gamestates.createlvl.CreatedLvlsList;
 import com.example.zonesshift.gamestates.menustates.LeaderBoard;
 import com.example.zonesshift.gamestates.menustates.LevelScreen;
-import com.example.zonesshift.gamestates.menustates.StartMenu;
 import com.example.zonesshift.main.GameLoop;
 import com.example.zonesshift.main.MainActivity;
 
@@ -38,6 +36,9 @@ public class Game {
     private void initGameStates() {
         menu = new Menu(this);
         playing = new Playing(this);
+        if(Playing.getMapManager().getCurrentMapId() == -1){
+            currentGameState = GameState.PLAYING;
+        }
     }
 
     public boolean touchEvent(MotionEvent event) {

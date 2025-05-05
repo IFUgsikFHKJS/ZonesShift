@@ -92,6 +92,7 @@ public class Tile implements BitmapMethods {
                     break;
                 case 'W':
                     playing.win();
+                    break;
 //                    playing.nextMap();
                 case '1':
 //                    System.out.println(playerY + " " + ( y + size + tileOffsetY) + " " + playerHeight + " " + (y + tileOffsetY));

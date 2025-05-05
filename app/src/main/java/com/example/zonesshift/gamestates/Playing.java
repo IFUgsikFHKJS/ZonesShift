@@ -2,18 +2,23 @@ package com.example.zonesshift.gamestates;
 
 import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_WIDTH;
 
+import android.app.Activity;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
 
+import com.example.zonesshift.R;
 import com.example.zonesshift.entities.Character;
 import com.example.zonesshift.Game;
 import com.example.zonesshift.environments.Tile;
 import com.example.zonesshift.environments.mapmanagment.Map;
+import com.example.zonesshift.gamestates.createlvl.mapeditor.MapEditorActivity;
+import com.example.zonesshift.gamestates.createlvl.mapeditor.MapEditorView;
 import com.example.zonesshift.helpers.interfaces.BitmapMethods;
 import com.example.zonesshift.helpers.interfaces.GameStateInterface;
 import com.example.zonesshift.environments.mapmanagment.MapManager;
+import com.example.zonesshift.main.GamePanel;
 import com.example.zonesshift.ui.ButtonImages;
 import com.example.zonesshift.ui.CustomButton;
 
@@ -93,8 +98,15 @@ public class Playing extends BaseState implements GameStateInterface, BitmapMeth
                 if (btnRestart.isPushed())
                     mapManager.restartCurrentMap();
             if (btnLvls.isIn(event))
-                if (btnLvls.isPushed())
-                    game.setCurrentGameState(Game.GameState.LEVELSCREEN);
+                if (btnLvls.isPushed()){
+                    if (mapManager.getCurrentMapId() != -1)
+                        game.setCurrentGameState(Game.GameState.LEVELSCREEN);
+                    else {
+                        MapEditorActivity a = (MapEditorActivity) GamePanel.getGameContext();
+                        a.returnToEditor();
+                    }
+
+                }
 
             btnRestart.setPushed(false);
             btnLvls.setPushed(false);
@@ -116,6 +128,18 @@ public class Playing extends BaseState implements GameStateInterface, BitmapMeth
 
     public void win() {
         mapManager.win();
-        game.setCurrentGameState(Game.GameState.LEVELSCREEN);
+        System.out.println(3333333);
+        if (mapManager.getCurrentMapId() != -1)
+            game.setCurrentGameState(Game.GameState.LEVELSCREEN);
+        else {
+            MapEditorActivity a = (MapEditorActivity) GamePanel.getGameContext();
+            System.out.println(a.isContentView());
+            if (a.isContentView())
+                a.returnToEditor();
+        }
+    }
+
+    public static MapManager getMapManager(){
+        return mapManager;
     }
 }

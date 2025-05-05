@@ -14,6 +14,10 @@ import com.example.zonesshift.authentication.LoginActivity;
 import com.example.zonesshift.authentication.RegisterActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(new GamePanel(this));
 
 
+
     }
 
     @Override
@@ -84,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(MainActivity.this, LoginActivity.class));
         finish();
     }
+
 
     public static Context getGameContext(){
         return gameContext;
