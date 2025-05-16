@@ -97,7 +97,7 @@ public class LevelScreen extends BaseState implements GameStateInterface, Bitmap
         GetTopPlayerOnMap.getTopPlayers(String.valueOf(currentId),
                 topPlayers -> {
                     topPlayerList = topPlayers;
-                    leaderBoardPaint.setAlpha(256);
+                    leaderBoardPaint.setAlpha(255);
 
 
                 },
@@ -106,7 +106,7 @@ public class LevelScreen extends BaseState implements GameStateInterface, Bitmap
     }
 
     private void setPaintSettings() {
-        typeface = ResourcesCompat.getFont(GamePanel.getGameContext(), R.font.minecraft);
+        typeface = ResourcesCompat.getFont(MainActivity.getGameContext(), R.font.minecraft);
 
         paint = new Paint();
         paint.setColor(ContextCompat.getColor(MainActivity.getGameContext(), R.color.text_color));

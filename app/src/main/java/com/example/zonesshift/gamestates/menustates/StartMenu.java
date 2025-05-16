@@ -1,9 +1,7 @@
 package com.example.zonesshift.gamestates.menustates;
 
-import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_HEIGHT;
 import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_WIDTH;
 
-import android.content.Intent;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 
@@ -14,9 +12,8 @@ import com.example.zonesshift.environments.mapmanagment.MapLoader;
 import com.example.zonesshift.environments.mapmanagment.mapcreating.LoadMap;
 import com.example.zonesshift.gamestates.BaseState;
 import com.example.zonesshift.gamestates.Menu;
-import com.example.zonesshift.gamestates.createlvl.mapeditor.MapEditorActivity;
+import com.example.zonesshift.gamestates.searchlvl.SearchMainScreen;
 import com.example.zonesshift.helpers.interfaces.GameStateInterface;
-import com.example.zonesshift.main.GamePanel;
 import com.example.zonesshift.ui.ButtonImages;
 import com.example.zonesshift.ui.CustomButton;
 
@@ -25,6 +22,7 @@ public class StartMenu extends BaseState implements GameStateInterface {
     private CustomButton btnSinglePlayer;
     private CustomButton btnSettings;
     private CustomButton btnCreateLvl;
+    private CustomButton btnSearchLvl;
 
     public StartMenu(Game game) {
         super(game);
@@ -32,13 +30,16 @@ public class StartMenu extends BaseState implements GameStateInterface {
     }
 
     private void initButtons(){
-        float btnX = (float) GAME_WIDTH / 2 - (float) ButtonImages.MENU_SINGLEPLAYER.getWidth() / 2;
-        float btnUnit = ButtonImages.MENU_CREATELVL.getHeight();
-        btnSinglePlayer = new CustomButton(btnX, (float) (btnUnit * 1.5),
-                ButtonImages.MENU_SINGLEPLAYER.getWidth(), ButtonImages.MENU_SINGLEPLAYER.getHeight());
+        float btnX = (float) GAME_WIDTH / 2 - (float) ButtonImages.MENU_SINGLE_PLAYER.getWidth() / 2;
+        float btnUnit = ButtonImages.MENU_CREATE_LVL.getHeight();
+        btnSinglePlayer = new CustomButton(btnX, (float) (btnUnit * 1),
+                ButtonImages.MENU_SINGLE_PLAYER.getWidth(), ButtonImages.MENU_SINGLE_PLAYER.getHeight());
 
-        btnCreateLvl = new CustomButton(btnX, btnUnit * 3,
-                ButtonImages.MENU_CREATELVL.getWidth(), ButtonImages.MENU_CREATELVL.getHeight());
+        btnCreateLvl = new CustomButton(btnX, (float) (btnUnit * 2.5),
+                ButtonImages.MENU_CREATE_LVL.getWidth(), ButtonImages.MENU_CREATE_LVL.getHeight());
+
+        btnSearchLvl = new CustomButton(btnX, (float) (btnUnit * 4),
+                ButtonImages.MENU_SEARCH_LVL.getWidth(), ButtonImages.MENU_SEARCH_LVL.getHeight());
 
         btnSettings = new CustomButton((float) (GAME_WIDTH - ButtonImages.MENU_SETTINGS.getWidth() * 1.5),
                 (float) (ButtonImages.MENU_SETTINGS.getWidth() * .5),
@@ -60,14 +61,19 @@ public class StartMenu extends BaseState implements GameStateInterface {
 
     private void drawButtons(Canvas c){
         c.drawBitmap(
-                ButtonImages.MENU_SINGLEPLAYER.getBtnImg(btnSinglePlayer.isPushed()),
+                ButtonImages.MENU_SINGLE_PLAYER.getBtnImg(btnSinglePlayer.isPushed()),
                 btnSinglePlayer.getHitbox().left,
                 btnSinglePlayer.getHitbox().top, null);
 
         c.drawBitmap(
-                ButtonImages.MENU_CREATELVL.getBtnImg(btnCreateLvl.isPushed()),
+                ButtonImages.MENU_CREATE_LVL.getBtnImg(btnCreateLvl.isPushed()),
                 btnCreateLvl.getHitbox().left,
                 btnCreateLvl.getHitbox().top, null);
+
+        c.drawBitmap(
+                ButtonImages.MENU_SEARCH_LVL.getBtnImg(btnSearchLvl.isPushed()),
+                btnSearchLvl.getHitbox().left,
+                btnSearchLvl.getHitbox().top, null);
 
         c.drawBitmap(
                 ButtonImages.MENU_SETTINGS.getBtnImg(btnSettings.isPushed()),
@@ -87,7 +93,10 @@ public class StartMenu extends BaseState implements GameStateInterface {
             else if (btnCreateLvl.isIn(event))
                 btnCreateLvl.setPushed(true);
 
-            else if(btnSettings.isIn(event))
+            else if (btnSearchLvl.isIn(event))
+                btnSearchLvl.setPushed(true);
+
+            else if (btnSettings.isIn(event))
                 btnSettings.setPushed(true);
 
 
@@ -96,38 +105,27 @@ public class StartMenu extends BaseState implements GameStateInterface {
             if (btnSinglePlayer.isIn(event)) {
                 if (btnSinglePlayer.isPushed())
                     game.getMenu().setCurrentMenuState(Menu.MenuState.SINGLEPLAYER_LVL);
+            } else if (btnCreateLvl.isIn(event)) {
+                if (btnCreateLvl.isPushed())
+                    game.getMenu().setCurrentMenuState(Menu.MenuState.CREATEDLVLSLIST);
+            } else if (btnSearchLvl.isIn(event)) {
+                if (btnSearchLvl.isPushed()) {
+                    game.getMenu().setSearchMainScreen(new SearchMainScreen(game));
+                    game.getMenu().setCurrentMenuState(Menu.MenuState.SEARCHLVL);
+                }
             }
 
-            else if (btnCreateLvl.isIn(event)){
-                if (btnCreateLvl.isPushed())
-                    game.getMenu().setCurrentMenuState(Menu.MenuState.CREATEDLVLSLIST);}
-
-            else if (btnSettings.isIn(event)){
+            else if (btnSettings.isIn(event)) {
                 if (btnSettings.isPushed())
-                    game.getMenu().setCurrentMenuState(Menu.MenuState.GAME_SETTINGS);}
+                    game.getMenu().setCurrentMenuState(Menu.MenuState.GAME_SETTINGS);
+                }
 
 
-
-            btnSinglePlayer.setPushed(false);
-            btnCreateLvl.setPushed(false);
-            btnSettings.setPushed(false);
+                btnSinglePlayer.setPushed(false);
+                btnCreateLvl.setPushed(false);
+                btnSearchLvl.setPushed(false);
+                btnSettings.setPushed(false);
+            }
         }
-    }
-
-
-    private void loadMapFromDB(){
-        LoadMap.getMapById(8,
-                mapData -> {
-                    String mapString = (String) mapData.get("map_data");
-                    System.out.println("Загружена карта: " + mapString);
-                    Tile[][] tiles = MapLoader.loadMapFromString(mapString);
-
-
-                    game.getPlaying().setCurrentOnlineMap(new Map(tiles), 8);
-                    game.setCurrentGameStateLvlScreen(new LevelScreen(game, 8));
-                },
-                e -> System.out.println("Ошибка загрузки карты: " + e.getMessage()));
-    }
-
 
 }

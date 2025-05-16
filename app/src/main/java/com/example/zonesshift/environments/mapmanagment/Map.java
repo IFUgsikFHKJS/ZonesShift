@@ -13,6 +13,7 @@ import androidx.core.content.res.ResourcesCompat;
 import com.example.zonesshift.R;
 import com.example.zonesshift.environments.Tile;
 import com.example.zonesshift.main.GamePanel;
+import com.example.zonesshift.main.MainActivity;
 import com.example.zonesshift.ui.TimerLevel;
 
 
@@ -50,9 +51,9 @@ public class Map {
             }
         }
 
-        typeface = ResourcesCompat.getFont(GamePanel.getGameContext(), R.font.minecraft);
+        typeface = ResourcesCompat.getFont(MainActivity.getGameContext(), R.font.minecraft);
         paint = new Paint();
-        paint.setColor(ContextCompat.getColor(GamePanel.getGameContext(), R.color.time_text_color));
+        paint.setColor(ContextCompat.getColor(MainActivity.getGameContext(), R.color.time_text_color));
 //        paint.setAlpha(150);
         paint.setTypeface(typeface);
         paint.setTextSize((float) GAME_WIDTH / 30);

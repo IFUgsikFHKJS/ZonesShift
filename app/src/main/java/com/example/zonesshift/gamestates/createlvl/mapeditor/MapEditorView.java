@@ -14,6 +14,7 @@ import android.view.View;
 import com.example.zonesshift.environments.mapmanagment.MapLoader;
 import com.example.zonesshift.environments.Tile;
 import com.example.zonesshift.environments.mapmanagment.Map;
+import com.example.zonesshift.helpers.interfaces.Verifications;
 import com.example.zonesshift.main.GamePanel;
 
 import java.io.BufferedReader;
@@ -22,7 +23,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class MapEditorView extends View {
+public class MapEditorView extends View implements Verifications {
 
     private String mapName;
     private TileSimplified[][] map = new TileSimplified[20][20];
@@ -306,7 +307,7 @@ public class MapEditorView extends View {
         invalidate();
     }
 
-    public TileSimplified[][] cropMap(TileSimplified[][] map) {
+    public static TileSimplified[][] cropMap(TileSimplified[][] map) {
         int top = map.length, bottom = -1, left = map[0].length, right = -1;
 
         for (int y = 0; y < map.length; y++) {
@@ -332,7 +333,7 @@ public class MapEditorView extends View {
         return cropped;
     }
 
-    private String mapToString(TileSimplified[][] map) {
+    private static String mapToString(TileSimplified[][] map) {
         StringBuilder sb = new StringBuilder();
         for (TileSimplified[] row : map) {
             for (TileSimplified tile : row) {
@@ -344,6 +345,11 @@ public class MapEditorView extends View {
             sb.append("\n");
         }
         return sb.toString().trim();
+    }
+
+    public static String getMapString(String name){
+        TileSimplified[][] mapSimplified =  MapLoader.loadSimplifiedMapFromString(loadMapAsString(name));
+        return mapToString(cropMap(mapSimplified));
     }
 
     public Map getMap(boolean isCropped) {
@@ -360,6 +366,11 @@ public class MapEditorView extends View {
             newMap = MapLoader.loadMapFromString(mapToString(map));
         }
 
+        if (!loadMapAsString(mapName).equals(mapToString(map)) ){
+            java.util.Map<String, Boolean> maps = loadVerifications();
+            maps.put(mapName, false);
+            saveVerifications(maps);
+        }
         saveMapToFile(context, mapName, mapToString(map));
 
 
@@ -375,6 +386,8 @@ public class MapEditorView extends View {
 
     }
 
+
+
     public boolean saveMapToFile(Context context, String mapName, String mapData) {
         String fileName = mapName + ".txt";
         File file = new File(context.getFilesDir(), fileName);
@@ -389,7 +402,7 @@ public class MapEditorView extends View {
         }
     }
 
-    public String loadMapAsString(String mapName) {
+    public static String loadMapAsString(String mapName) {
         File file = new File(GamePanel.getGameContext().getFilesDir(), mapName + ".txt");
 
         if (!file.exists()) return null;

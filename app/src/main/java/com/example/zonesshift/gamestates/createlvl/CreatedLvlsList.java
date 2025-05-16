@@ -2,10 +2,12 @@ package com.example.zonesshift.gamestates.createlvl;
 
 import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_HEIGHT;
 import static com.example.zonesshift.helpers.GameConstants.GameSize.GAME_WIDTH;
+import static com.example.zonesshift.ui.ButtonImages.ADD;
 import static com.example.zonesshift.ui.ButtonImages.HOME;
 import static com.example.zonesshift.ui.ButtonImages.LVL_ITEM;
+import static com.example.zonesshift.ui.ButtonImages.NEXT_LVL;
+import static com.example.zonesshift.ui.ButtonImages.PREV_LVL;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -20,37 +22,40 @@ import com.example.zonesshift.Game;
 import com.example.zonesshift.R;
 import com.example.zonesshift.gamestates.BaseState;
 import com.example.zonesshift.gamestates.Menu;
-import com.example.zonesshift.gamestates.createlvl.mapeditor.MapEditorActivity;
-import com.example.zonesshift.gamestates.createlvl.mapeditor.TileSimplified;
 import com.example.zonesshift.helpers.interfaces.BitmapMethods;
 import com.example.zonesshift.helpers.interfaces.GameStateInterface;
+import com.example.zonesshift.helpers.interfaces.Verifications;
 import com.example.zonesshift.main.GamePanel;
 import com.example.zonesshift.main.MainActivity;
 import com.example.zonesshift.ui.CustomButton;
 
-import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
-public class CreatedLvlsList extends BaseState implements GameStateInterface, BitmapMethods {
+public class CreatedLvlsList extends BaseState implements GameStateInterface, BitmapMethods, Verifications {
 
     private Map<String, Boolean> maps;
-    private int page;
+    private int page = 0;
+    private int maxPage;
 
     private Typeface typeface;
     private Paint paint;
     private float textHeight;
 
+    private CreatedLvlScreen lvlScreen;
+    private boolean inLvlScreen = false;
+    private AddLvlScreen addLvl;
+    private boolean inAddLvl = false;
+
     private CustomButton btnHome;
     private CustomButton[] btnLvl;
+
+    private CustomButton btnNext;
+    private CustomButton btnPrev;
+    private CustomButton btnAdd;
 
 
     public CreatedLvlsList(Game game) {
@@ -60,18 +65,21 @@ public class CreatedLvlsList extends BaseState implements GameStateInterface, Bi
 
 
         maps = loadVerifications();
-        page = maps.size() / 4;
+        maxPage = maps.size() / 4;
         btnLvl  = new CustomButton[maps.size()];
 
         initButtons();
 
 
-        System.out.println(maps);
     }
 
     private void initButtons() {
 
-        btnHome = new CustomButton(GAME_WIDTH / 26, GAME_WIDTH / 26, HOME.getWidth(), HOME.getHeight());
+        btnHome = new CustomButton(GAME_WIDTH / 26, GAME_HEIGHT / 13, HOME.getWidth(), HOME.getHeight());
+
+        btnNext = new CustomButton( GAME_WIDTH - GAME_WIDTH / 20 - NEXT_LVL.getWidth(), GAME_HEIGHT / 2 - NEXT_LVL.getHeight() / 2, NEXT_LVL.getWidth(), NEXT_LVL.getHeight() );
+        btnPrev = new CustomButton( GAME_WIDTH / 20, GAME_HEIGHT / 2 - PREV_LVL.getHeight() / 2, PREV_LVL.getWidth(), PREV_LVL.getHeight() );
+        btnAdd = new CustomButton(GAME_WIDTH - GAME_WIDTH / 20 - ADD.getWidth(), GAME_HEIGHT - GAME_HEIGHT / 13 - ADD.getHeight(), ADD.getWidth(), ADD.getHeight());
 
         initLvlItems();
 
@@ -79,20 +87,20 @@ public class CreatedLvlsList extends BaseState implements GameStateInterface, Bi
 
     private void initLvlItems() {
 
+        maps = loadVerifications();
+        btnLvl  = new CustomButton[maps.size()];
+
+
         float x = (float) GAME_WIDTH / 2 - (float) GAME_WIDTH / 5;
         float defaultY = (float) GAME_HEIGHT / 8;
 
         int index = 0;
         for (Map.Entry<String, Boolean> map : maps.entrySet()){
-            if (index >= page * 3 && index < page * 3 + 3){
+
                 float itemY = defaultY +  (float) (index % 3 * GAME_HEIGHT) / 4;
 
                 btnLvl[index] = new CustomButton(x, itemY, LVL_ITEM.getWidth(), LVL_ITEM.getHeight());
 
-
-
-
-            }
 
             index++;
         }
@@ -100,7 +108,7 @@ public class CreatedLvlsList extends BaseState implements GameStateInterface, Bi
     }
 
     private void setPaintSettings() {
-        typeface = ResourcesCompat.getFont(GamePanel.getGameContext(), R.font.minecraft);
+        typeface = ResourcesCompat.getFont(MainActivity.getGameContext(), R.font.minecraft);
 
         paint = new Paint();
         paint.setColor(ContextCompat.getColor(MainActivity.getGameContext(), R.color.text_color));
@@ -116,6 +124,9 @@ public class CreatedLvlsList extends BaseState implements GameStateInterface, Bi
     @Override
     public void update(double delta) {
 
+        if (inLvlScreen)
+            lvlScreen.update(delta);
+
     }
 
     @Override
@@ -123,8 +134,15 @@ public class CreatedLvlsList extends BaseState implements GameStateInterface, Bi
 
 //        c.drawText("LOLOLO", 50, 50, paint);
 
-        drawLvls(c);
-        drawButtons(c);
+        if (inLvlScreen)
+            lvlScreen.render(c);
+        else if(inAddLvl)
+            addLvl.render(c);
+        else {
+            drawLvls(c);
+            drawButtons(c);
+        }
+
 
 
 
@@ -136,17 +154,35 @@ public class CreatedLvlsList extends BaseState implements GameStateInterface, Bi
                 btnHome.getHitbox().left,
                 btnHome.getHitbox().top, null);
 
+        if (maxPage != 0){
+            c.drawBitmap(NEXT_LVL.getBtnImg(btnNext.isPushed()),
+                    btnNext.getHitbox().left,
+                    btnNext.getHitbox().top, null);
+
+            c.drawBitmap(PREV_LVL.getBtnImg(btnPrev.isPushed()),
+                    btnPrev.getHitbox().left,
+                    btnPrev.getHitbox().top, null);
+        }
+
+
+
+        c.drawBitmap(ADD.getBtnImg(btnAdd.isPushed()),
+                btnAdd.getHitbox().left,
+                btnAdd.getHitbox().top, null);
+
         drawLvls(c);
 
     }
 
     private void drawLvls(Canvas c) {
 
-        for (CustomButton customButton : btnLvl) {
-            c.drawBitmap(
-                    LVL_ITEM.getBtnImg(customButton.isPushed()),
-                    customButton.getHitbox().left,
-                    customButton.getHitbox().top, null);
+        for (int i = 0; i < btnLvl.length; i++) {
+            if (i >= page * 3 && i < page * 3 + 3) {
+                c.drawBitmap(
+                        LVL_ITEM.getBtnImg(btnLvl[i].isPushed()),
+                        btnLvl[i].getHitbox().left,
+                        btnLvl[i].getHitbox().top, null);
+            }
         }
 
         int index = 0;
@@ -181,44 +217,99 @@ public class CreatedLvlsList extends BaseState implements GameStateInterface, Bi
     @Override
     public void touchEvents(MotionEvent event) {
 
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+        if (inLvlScreen)
+            lvlScreen.touchEvents(event);
+        else if (inAddLvl)
+            addLvl.touchEvents(event);
+        else {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
-            for (CustomButton customButton : btnLvl) {
-                if (customButton.isIn(event)) {
-                    customButton.setPushed(true);
-                    break;
-                }
-            }
-
-
-            if(btnHome.isIn(event))
-                btnHome.setPushed(true);
-
-        } else if (event.getAction() == MotionEvent.ACTION_UP) {
-
-            for (int i = 0; i < btnLvl.length; i++){
-                if (btnLvl[i].isIn(event))
-                    if (btnLvl[i].isPushed()) {
-
-                        selectLvl(i);
-
-                        btnLvl[i].setPushed(false);
-                        break;
+                for (int i = 0; i < btnLvl.length; i++) {
+                    if (i >= page * 3 && i < page * 3 + 3) {
+                        if (btnLvl[i].isIn(event)) {
+                            btnLvl[i].setPushed(true);
+                            break;
+                        }
                     }
+
+                }
+
+
+                if (btnHome.isIn(event))
+                    btnHome.setPushed(true);
+
+                else if (btnNext.isIn(event)) {
+                    btnNext.setPushed(true);
+                } else if (btnPrev.isIn(event)) {
+                    btnPrev.setPushed(true);
+                } else if (btnAdd.isIn(event)) {
+                    btnAdd.setPushed(true);
+                }
+
+            } else if (event.getAction() == MotionEvent.ACTION_UP) {
+
+                for (int i = 0; i < btnLvl.length; i++) {
+                    if (i >= page * 3 && i < page * 3 + 3) {
+                        if (btnLvl[i].isIn(event))
+                            if (btnLvl[i].isPushed()) {
+
+                                selectLvl(i);
+
+                                btnLvl[i].setPushed(false);
+                                break;
+                            }
+                    }
+
+                }
+
+
+                if (btnHome.isIn(event))
+                    if (btnHome.isPushed())
+                        game.getMenu().setCurrentMenuState(Menu.MenuState.START_MENU);
+                if (btnNext.isIn(event))
+                    if (btnNext.isPushed())
+                        nextPage();
+                if (btnPrev.isIn(event))
+                    if (btnPrev.isPushed())
+                        prevPage();
+                if (btnAdd.isIn(event))
+                    if (btnAdd.isPushed())
+                        createMapScreen();
+
+                for (int i = 0; i < btnLvl.length; i++) {
+                    if (i >= page * 3 && i < page * 3 + 3)
+                        btnLvl[i].setPushed(false);
+                }
+
+                btnHome.setPushed(false);
+                btnNext.setPushed(false);
+                btnPrev.setPushed(false);
+                btnAdd.setPushed(false);
             }
-
-
-            if (btnHome.isIn(event))
-                if (btnHome.isPushed())
-                    game.getMenu().setCurrentMenuState(Menu.MenuState.START_MENU);
-
-            for (CustomButton button : btnLvl){
-                button.setPushed(false);
-            }
-
-            btnHome.setPushed(false);
         }
 
+
+    }
+
+    private void createMapScreen() {
+
+        addLvl = new AddLvlScreen(game, this);
+        inAddLvl = true;
+
+    }
+
+    private void nextPage(){
+        if (page != maxPage)
+            page++;
+        else
+            page = 0;
+    }
+
+    private void prevPage(){
+        if (page != 0)
+            page--;
+        else
+            page = maxPage;
     }
 
     private void selectLvl(int i) {
@@ -228,15 +319,9 @@ public class CreatedLvlsList extends BaseState implements GameStateInterface, Bi
         for (Map.Entry<String, Boolean> map : maps.entrySet()){
             if (index == i){
 
-                String mapString = loadMapAsString(map.getKey());
+                lvlScreen = new CreatedLvlScreen(game, map.getKey(), map.getValue(), this);
+                inLvlScreen = true;
 
-                System.out.println(mapString);
-
-                Intent intent = new Intent(GamePanel.getGameContext(), MapEditorActivity.class);
-                intent.putExtra("name", map.getKey());
-                intent.putExtra("map", mapString);
-
-                GamePanel.getGameContext().startActivity(intent);
 
             }
 
@@ -246,26 +331,10 @@ public class CreatedLvlsList extends BaseState implements GameStateInterface, Bi
     }
 
 
-    public String loadMapAsString(String mapName) {
-        File file = new File(GamePanel.getGameContext().getFilesDir(), mapName + ".txt");
 
-        if (!file.exists()) return null;
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            StringBuilder builder = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                builder.append(line).append("\n");
-            }
-            return builder.toString().trim();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     private boolean saveMapAsString(String mapName, String mapData) {
-        File file = new File(GamePanel.getGameContext().getFilesDir(), mapName + ".txt");
+        File file = new File(MainActivity.getGameContext().getFilesDir(), mapName + ".txt");
 
         if (file.exists()) return false;
 
@@ -279,41 +348,22 @@ public class CreatedLvlsList extends BaseState implements GameStateInterface, Bi
         }
     }
 
-    private Map<String, Boolean> loadVerifications() {
-        File file = new File(GamePanel.getGameContext().getFilesDir(), "verifications.json");
 
-        if (!file.exists()) return new HashMap<>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            StringBuilder json = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                json.append(line);
-            }
 
-            JSONObject obj = new JSONObject(json.toString());
-            Map<String, Boolean> result = new HashMap<>();
-            Iterator<String> keys = obj.keys();
-            while (keys.hasNext()) {
-                String key = keys.next();
-                result.put(key, obj.getBoolean(key));
-            }
-            return result;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new HashMap<>();
-        }
+
+    public void setInLvlScreen(boolean inLvlScreen){
+        this.inLvlScreen = inLvlScreen;
+        maps = loadVerifications();
+        maxPage = maps.size() / 4;
+        initLvlItems();
     }
 
-    private void saveVerifications(Map<String, Boolean> map) {
-        JSONObject obj = new JSONObject(map);
-        File file = new File(GamePanel.getGameContext().getFilesDir(), "verifications.json");
-
-        try (FileWriter writer = new FileWriter(file)) {
-            writer.write(obj.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void setInAddLvl(boolean inAddLvl){
+        this.inAddLvl = inAddLvl;
+        maps = loadVerifications();
+        maxPage = maps.size() / 4;
+        initLvlItems();
     }
 
 

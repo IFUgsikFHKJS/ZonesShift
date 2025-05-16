@@ -20,6 +20,7 @@ import androidx.core.content.res.ResourcesCompat;
 import com.example.zonesshift.Game;
 import com.example.zonesshift.R;
 import com.example.zonesshift.gamestates.BaseState;
+import com.example.zonesshift.gamestates.Playing;
 import com.example.zonesshift.helpers.interfaces.BitmapMethods;
 import com.example.zonesshift.helpers.interfaces.GameStateInterface;
 import com.example.zonesshift.main.GamePanel;
@@ -64,7 +65,7 @@ public class LeaderBoard extends BaseState implements GameStateInterface, Bitmap
     }
 
     private void setPaintSettings() {
-        typeface = ResourcesCompat.getFont(GamePanel.getGameContext(), R.font.minecraft);
+        typeface = ResourcesCompat.getFont(MainActivity.getGameContext(), R.font.minecraft);
         textPaint = new Paint();
         textPaint.setColor(ContextCompat.getColor(MainActivity.getGameContext(), R.color.text_color));
         textPaint.setAlpha(150);
@@ -123,7 +124,11 @@ public class LeaderBoard extends BaseState implements GameStateInterface, Bitmap
         } else if (event.getAction() == MotionEvent.ACTION_UP) {
             if (btnLvls.isIn(event))
                 if (btnLvls.isPushed())
-                    game.setCurrentGameState(Game.GameState.LEVELSCREEN);
+                    if (Playing.getMapManager().getCurrentMapId() >= 100) {
+                        game.setCurrentGameState(Game.GameState.MENU);
+                    }
+                    else
+                        game.setCurrentGameState(Game.GameState.LEVELSCREEN);
 
             btnLvls.setPushed(false);
         }

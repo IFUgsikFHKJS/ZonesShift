@@ -38,7 +38,7 @@ public class GameSettings extends BaseState implements GameStateInterface {
     public GameSettings(Game game) {
         super(game);
 
-        typeface = ResourcesCompat.getFont(GamePanel.getGameContext(), R.font.minecraft);
+        typeface = ResourcesCompat.getFont(MainActivity.getGameContext(), R.font.minecraft);
         paint = new Paint();
         paint.setColor(ContextCompat.getColor(MainActivity.getGameContext(), R.color.text_color));
         paint.setAlpha(150);
@@ -108,9 +108,9 @@ public class GameSettings extends BaseState implements GameStateInterface {
             if (btnSignOut.isIn(event)) {
                 if (btnSignOut.isPushed()) {
                     FirebaseAuth.getInstance().signOut();
-                    Intent loginIntent = new Intent(GamePanel.getGameContext(), LoginActivity.class);
+                    Intent loginIntent = new Intent(MainActivity.getGameContext(), LoginActivity.class);
                     loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
-                    GamePanel.getGameContext().startActivity(loginIntent);
+                    MainActivity.getGameContext().startActivity(loginIntent);
                 }
             }
 

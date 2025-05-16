@@ -100,10 +100,13 @@ public class Playing extends BaseState implements GameStateInterface, BitmapMeth
             if (btnLvls.isIn(event))
                 if (btnLvls.isPushed()){
                     if (mapManager.getCurrentMapId() != -1)
-                        game.setCurrentGameState(Game.GameState.LEVELSCREEN);
+                        if (mapManager.getCurrentMapId() >= 100)
+                            game.setCurrentGameState(Game.GameState.MENU);
+                        else
+                            game.setCurrentGameState(Game.GameState.LEVELSCREEN);
                     else {
                         MapEditorActivity a = (MapEditorActivity) GamePanel.getGameContext();
-                        a.returnToEditor();
+                        a.returnToEditor(false);
                     }
 
                 }
@@ -128,14 +131,17 @@ public class Playing extends BaseState implements GameStateInterface, BitmapMeth
 
     public void win() {
         mapManager.win();
-        System.out.println(3333333);
+        System.out.println(mapManager.getCurrentMapId());
         if (mapManager.getCurrentMapId() != -1)
-            game.setCurrentGameState(Game.GameState.LEVELSCREEN);
+            if (mapManager.getCurrentMapId() >= 100)
+                game.setCurrentGameState(Game.GameState.MENU);
+            else
+                game.setCurrentGameState(Game.GameState.LEVELSCREEN);
         else {
             MapEditorActivity a = (MapEditorActivity) GamePanel.getGameContext();
             System.out.println(a.isContentView());
             if (a.isContentView())
-                a.returnToEditor();
+                a.returnToEditor(true);
         }
     }
 

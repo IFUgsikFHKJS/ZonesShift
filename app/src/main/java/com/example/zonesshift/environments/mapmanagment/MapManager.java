@@ -11,7 +11,6 @@ import com.example.zonesshift.entities.Player;
 import com.example.zonesshift.main.MainActivity;
 import com.example.zonesshift.environments.Tile;
 import com.example.zonesshift.ui.TimerLevel;
-import com.example.zonesshift.environments.mapmanagment.mapcreating.AddMap;
 import com.example.zonesshift.userresults.AddBestTime;
 
 import java.io.BufferedReader;
@@ -160,5 +159,9 @@ public class MapManager {
 
     public void updateMap(double delta) {
         currentMap.update(delta);
+    }
+
+    public void setCurrentMapId(int currentMapId) {
+        this.currentMapId = currentMapId;
     }
 }

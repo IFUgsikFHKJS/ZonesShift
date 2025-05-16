@@ -15,6 +15,7 @@ import com.example.zonesshift.gamestates.createlvl.CreatedLvlsList;
 import com.example.zonesshift.gamestates.menustates.GameSettings;
 import com.example.zonesshift.gamestates.menustates.SinglePlayerLevels;
 import com.example.zonesshift.gamestates.menustates.StartMenu;
+import com.example.zonesshift.gamestates.searchlvl.SearchMainScreen;
 import com.example.zonesshift.helpers.interfaces.BitmapMethods;
 import com.example.zonesshift.helpers.interfaces.GameStateInterface;
 import com.example.zonesshift.main.MainActivity;
@@ -26,6 +27,7 @@ public class Menu extends BaseState implements GameStateInterface, BitmapMethods
     private SinglePlayerLevels singlePlayerLevels;
     private GameSettings gameSettings;
     private CreatedLvlsList createdLvlsList;
+    private SearchMainScreen searchMainScreen;
 
     private MenuState currentMenuState = MenuState.START_MENU;
 
@@ -35,6 +37,7 @@ public class Menu extends BaseState implements GameStateInterface, BitmapMethods
         singlePlayerLevels = new SinglePlayerLevels(game);
         gameSettings = new GameSettings(game);
         createdLvlsList = new CreatedLvlsList(game);
+        searchMainScreen = new SearchMainScreen(game);
     }
 
     @Override
@@ -44,6 +47,7 @@ public class Menu extends BaseState implements GameStateInterface, BitmapMethods
             case SINGLEPLAYER_LVL -> singlePlayerLevels.update(delta);
             case GAME_SETTINGS -> gameSettings.update(delta);
             case CREATEDLVLSLIST -> createdLvlsList.update(delta);
+            case SEARCHLVL -> searchMainScreen.update(delta);
         }
     }
 
@@ -55,6 +59,7 @@ public class Menu extends BaseState implements GameStateInterface, BitmapMethods
             case SINGLEPLAYER_LVL -> singlePlayerLevels.render(c);
             case GAME_SETTINGS -> gameSettings.render(c);
             case CREATEDLVLSLIST -> createdLvlsList.render(c);
+            case SEARCHLVL -> searchMainScreen.render(c);
         }
     }
 
@@ -77,11 +82,15 @@ public class Menu extends BaseState implements GameStateInterface, BitmapMethods
             case SINGLEPLAYER_LVL -> singlePlayerLevels.touchEvents(event);
             case GAME_SETTINGS -> gameSettings.touchEvents(event);
             case CREATEDLVLSLIST -> createdLvlsList.touchEvents(event);
+            case SEARCHLVL -> searchMainScreen.touchEvents(event);
         }
     }
 
     public enum MenuState{
-        START_MENU, SINGLEPLAYER_LVL, GAME_SETTINGS, CREATEDLVLSLIST;
+        START_MENU, SINGLEPLAYER_LVL, GAME_SETTINGS, CREATEDLVLSLIST, SEARCHLVL;
     }
 
+    public void setSearchMainScreen(SearchMainScreen searchMainScreen) {
+        this.searchMainScreen = searchMainScreen;
+    }
 }

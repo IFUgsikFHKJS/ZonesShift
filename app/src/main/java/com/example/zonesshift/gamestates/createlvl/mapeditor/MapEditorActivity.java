@@ -12,14 +12,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.zonesshift.Game;
 import com.example.zonesshift.R;
 import com.example.zonesshift.gamestates.Playing;
+import com.example.zonesshift.helpers.interfaces.Verifications;
 import com.example.zonesshift.main.GamePanel;
 import com.example.zonesshift.environments.mapmanagment.Map;
 import com.example.zonesshift.environments.mapmanagment.MapLoader;
+import com.example.zonesshift.main.MainActivity;
 
 
-
-
-public class MapEditorActivity extends AppCompatActivity {
+public class MapEditorActivity extends AppCompatActivity implements Verifications {
 
     private MapEditorView mapEditorView;
     private ImageButton btnBlock, btnRedzone, btnGravizone, btnRemove, btnPlayer, btnWin, btnTest, btnBack;
@@ -59,6 +59,12 @@ public class MapEditorActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStop(){
+        super.onStop();
+        GamePanel.setContext(MainActivity.getGameContext());
+    }
+
     public void testLvl(Map map){
         GamePanel gamePanel = new GamePanel(this);
         Playing.getMapManager().setCurrentOnlineMap(map,-1);
@@ -67,10 +73,15 @@ public class MapEditorActivity extends AppCompatActivity {
         contentView = true;
     }
 
-    public void returnToEditor(){
+    public void returnToEditor(boolean win){
         runOnUiThread(() -> {
             setContentView(R.layout.activity_map_editor);
             contentView = false;
+            if (win){
+                java.util.Map<String, Boolean> maps = loadVerifications();
+                maps.put(getIntent().getStringExtra("name"), true);
+                saveVerifications(maps);
+            }
             initLayout();
         });
     }

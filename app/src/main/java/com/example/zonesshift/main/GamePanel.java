@@ -11,7 +11,7 @@ import com.example.zonesshift.Game;
 
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private final Game game;
-    static private Context context;
+    private static Context context;
 
     public GamePanel(Context context) {
         super(context);
@@ -21,7 +21,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         game = new Game(holder);
     }
 
-    static public Context getGameContext(){
+    public static Context getGameContext(){
         return context;
     }
 
@@ -48,4 +48,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     public Game getGame() {
         return game;
     }
+
+    public static void setContext(Context context) {
+        GamePanel.context = context;
+    }
+
 }
