@@ -19,6 +19,7 @@ import com.example.zonesshift.helpers.interfaces.BitmapMethods;
 import com.example.zonesshift.helpers.interfaces.GameStateInterface;
 import com.example.zonesshift.environments.mapmanagment.MapManager;
 import com.example.zonesshift.main.GamePanel;
+import com.example.zonesshift.main.MainActivity;
 import com.example.zonesshift.ui.ButtonImages;
 import com.example.zonesshift.ui.CustomButton;
 
@@ -131,15 +132,16 @@ public class Playing extends BaseState implements GameStateInterface, BitmapMeth
 
     public void win() {
         mapManager.win();
-        System.out.println(mapManager.getCurrentMapId());
-        if (mapManager.getCurrentMapId() != -1)
-            if (mapManager.getCurrentMapId() >= 100)
-                game.setCurrentGameState(Game.GameState.MENU);
-            else
-                game.setCurrentGameState(Game.GameState.LEVELSCREEN);
+        System.out.println(game.getTemp());
+        System.out.println(game == MainActivity.getGame());
+        if (mapManager.getCurrentMapId() != -1) {
+            if (mapManager.getCurrentMapId() >= 100) {
+                MainActivity.getGame().setCurrentGameState(Game.GameState.MENU);
+            } else
+                MainActivity.getGame().setCurrentGameState(Game.GameState.LEVELSCREEN);
+        }
         else {
             MapEditorActivity a = (MapEditorActivity) GamePanel.getGameContext();
-            System.out.println(a.isContentView());
             if (a.isContentView())
                 a.returnToEditor(true);
         }

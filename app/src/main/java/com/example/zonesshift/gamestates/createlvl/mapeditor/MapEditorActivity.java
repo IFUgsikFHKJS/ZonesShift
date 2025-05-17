@@ -25,6 +25,7 @@ public class MapEditorActivity extends AppCompatActivity implements Verification
     private ImageButton btnBlock, btnRedzone, btnGravizone, btnRemove, btnPlayer, btnWin, btnTest, btnBack;
     private ImageButton[] buttons;
     private boolean contentView;
+    
 
     private void clearButtonsSelected(ImageButton selectButton){
         for (ImageButton btn : buttons){
@@ -62,13 +63,17 @@ public class MapEditorActivity extends AppCompatActivity implements Verification
     @Override
     protected void onStop(){
         super.onStop();
+
+
         GamePanel.setContext(MainActivity.getGameContext());
+        MainActivity.getGamePanel().setHolder();
     }
 
     public void testLvl(Map map){
         GamePanel gamePanel = new GamePanel(this);
         Playing.getMapManager().setCurrentOnlineMap(map,-1);
         gamePanel.getGame().setCurrentGameState(Game.GameState.PLAYING);
+        gamePanel.getGame().setTemp(10);
         setContentView(gamePanel);
         contentView = true;
     }
@@ -76,6 +81,8 @@ public class MapEditorActivity extends AppCompatActivity implements Verification
     public void returnToEditor(boolean win){
         runOnUiThread(() -> {
             setContentView(R.layout.activity_map_editor);
+            System.out.println(MainActivity.getGamePanel());
+            MainActivity.getGamePanel().setGame(MainActivity.getGame());
             contentView = false;
             if (win){
                 java.util.Map<String, Boolean> maps = loadVerifications();
@@ -176,7 +183,6 @@ public class MapEditorActivity extends AppCompatActivity implements Verification
             @Override
             public void onClick(View v) {
                 testLvl(mapEditorView.getMap(true));
-                System.out.println(11111111);
             }
         });
 

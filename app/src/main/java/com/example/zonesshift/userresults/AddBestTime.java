@@ -11,7 +11,6 @@ import java.util.Map;
 public class AddBestTime {
 
     public static void saveBestTime(int userId, int mapId, String newTime) {
-        System.out.println("UserId " + userId  + " mapID " + mapId);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference userResultRef = db.collection("leaderboard")
                 .document(String.valueOf(mapId))  // Преобразуем mapId в String

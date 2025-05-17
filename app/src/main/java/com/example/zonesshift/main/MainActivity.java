@@ -10,6 +10,7 @@ import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.zonesshift.Game;
 import com.example.zonesshift.authentication.LoginActivity;
 import com.example.zonesshift.authentication.RegisterActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,6 +23,10 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity {
 
     private static Context gameContext;
+    private static Game game;
+
+    private static GamePanel gamePanel;
+
     public static int GAME_WIDTH, GAME_HEIGHT, GAME_WIDTH_RES, GAME_HEIGHT_RES;
 
     @Override
@@ -54,7 +59,10 @@ public class MainActivity extends AppCompatActivity {
 
         RegisterActivity.updateUserIDs();
 
-        setContentView(new GamePanel(this));
+        gamePanel = new GamePanel(this);
+        game = gamePanel.getGame();
+
+        setContentView(gamePanel);
 
 
 
@@ -95,9 +103,17 @@ public class MainActivity extends AppCompatActivity {
         return gameContext;
     }
 
+
     int gcd(int a, int b) {
         if (b==0) return a;
         return gcd(b,a%b);
     }
 
+    public static Game getGame() {
+        return game;
+    }
+
+    public static GamePanel getGamePanel() {
+        return gamePanel;
+    }
 }

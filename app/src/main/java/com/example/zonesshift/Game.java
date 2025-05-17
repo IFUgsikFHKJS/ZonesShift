@@ -22,6 +22,8 @@ public class Game {
     private LevelScreen levelScreen;
     private LeaderBoard leaderBoard;
 
+    private int temp = 0;
+
 
     private GameState currentGameState = GameState.MENU;
 
@@ -115,6 +117,11 @@ public class Game {
         gameLoop.stopGameLoop();
     }
 
+    public void setTemp(int temp) {
+        this.temp = temp;
+    }
 
-
+    public int getTemp() {
+        return temp;
+    }
 }

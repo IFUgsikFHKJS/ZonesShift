@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import com.example.zonesshift.Game;
 
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
-    private final Game game;
+    private Game game;
     private static Context context;
 
     public GamePanel(Context context) {
@@ -49,8 +49,19 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         return game;
     }
 
+    public void setGame(Game game){
+        this.game = game;
+    }
+
     public static void setContext(Context context) {
         GamePanel.context = context;
     }
+
+    public void setHolder(){
+        SurfaceHolder holder = getHolder();
+        holder.addCallback(this);
+        game = MainActivity.getGame();
+    }
+
 
 }
