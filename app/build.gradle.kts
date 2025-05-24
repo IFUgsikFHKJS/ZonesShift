@@ -4,11 +4,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.zonesshift"
+    namespace = "com.zsgame.zonesshift"
     compileSdk = 34
 
+
+
     defaultConfig {
-        applicationId = "com.example.zonesshift"
+        applicationId = "com.zsgame.zonesshift"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -43,13 +45,16 @@ dependencies {
     implementation(libs.google.firebase.firestore)
     implementation(libs.google.firebase.database)
     implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation(libs.kryonet)
 
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+//    implementation(project(":app"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 }
+
